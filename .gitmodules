@@ -1,0 +1,3 @@
+[submodule "3rdparty/libshv"]
+	path = 3rdparty/libshv
+	url = https://github.com/silicon-heaven/libshv.git
