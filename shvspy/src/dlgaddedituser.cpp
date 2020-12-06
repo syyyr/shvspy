@@ -8,16 +8,15 @@
 
 
 #include <QCryptographicHash>
+#include <QMessageBox>
 
 static const std::string VALUE_METHOD = "value";
 static const std::string SET_VALUE_METHOD = "setValue";
 
-DlgAddEditUser::DlgAddEditUser(QWidget *parent, shv::iotqt::rpc::ClientConnection *rpc_connection, const std::string &acl_etc_users_node_path,
-							   const std::string &acl_etc_roles_node_path, DlgAddEditUser::DialogType dt) :
-	QDialog(parent),
-	ui(new Ui::DlgAddEditUser),
-	m_aclEtcUsersNodePath(acl_etc_users_node_path),
-	m_aclEtcRolesNodePath(acl_etc_roles_node_path)
+DlgAddEditUser::DlgAddEditUser(QWidget *parent, shv::iotqt::rpc::ClientConnection *rpc_connection, const std::string &acl_etc_node_path, DlgAddEditUser::DialogType dt)
+	: QDialog(parent)
+	, ui(new Ui::DlgAddEditUser)
+	, m_aclEtcNodePath(acl_etc_node_path)
 {
 	ui->setupUi(this);
 	m_dialogType = dt;
@@ -78,7 +77,9 @@ void DlgAddEditUser::accept()
 			ui->lblStatus->setText(tr("Adding new user"));
 
 			if (ui->chbCreateRole->isChecked()){
-				callCreateRoleAndSetSettings(user());
+				callCreateRole(user(), [this](){
+					callSetUserSettings();
+				});
 			}
 			else{
 				callSetUserSettings();
@@ -89,10 +90,12 @@ void DlgAddEditUser::accept()
 		}
 	}
 	else if (dialogType() == DialogType::Edit){
-		ui->lblStatus->setText(tr("Updating user ...") + QString::fromStdString(m_aclEtcUsersNodePath));
+		ui->lblStatus->setText(tr("Updating user ...") + QString::fromStdString(aclEtcUsersNodePath()));
 
 		if (ui->chbCreateRole->isChecked()){
-			callCreateRoleAndSetSettings(user());
+			callCreateRole(user(), [this]() {
+				callSetUserSettings();
+			});
 		}
 		else{
 			callSetUserSettings();
@@ -109,15 +112,34 @@ void DlgAddEditUser::onShowPasswordClicked()
 
 void DlgAddEditUser::onSelectRolesClicked()
 {
+	if (ui->chbCreateRole->isChecked() && !ui->leUserName->text().isEmpty()){
+
+		if (QMessageBox::question(this, tr("Confirm create role"),
+								  tr("You are requesting create new role. So you can select roles properly, "
+									 "new role must be created now. It will not be deleted if you cancel this dialog. "
+									 "Do you want to continue?")) == QMessageBox::StandardButton::Yes){
+
+			callCreateRole(user(), [this](){
+				execSelectRolesDialog();
+			});
+		}
+	}
+	else {
+		execSelectRolesDialog();
+	}
+}
+
+void DlgAddEditUser::execSelectRolesDialog()
+{
 	DlgSelectRoles dlg(this);
-	dlg.init(m_rpcConnection, m_aclEtcRolesNodePath, roles());
+	dlg.init(m_rpcConnection, m_aclEtcNodePath, roles());
 
 	if (dlg.exec() == QDialog::Accepted){
 		setRoles(dlg.selectedRoles());
 	}
 }
 
-void DlgAddEditUser::callCreateRoleAndSetSettings(const std::string &role_name)
+void DlgAddEditUser::callCreateRole(const std::string &role_name, std::function<void()> callback)
 {
 	if (m_rpcConnection == nullptr)
 		return;
@@ -125,13 +147,13 @@ void DlgAddEditUser::callCreateRoleAndSetSettings(const std::string &role_name)
 	int rqid = m_rpcConnection->nextRequestId();
 	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
 
-	cb->start(this, [this](const shv::chainpack::RpcResponse &response) {
+	cb->start(this, [this, callback](const shv::chainpack::RpcResponse &response) {
 		if (response.isValid()){
 			if(response.isError()) {
 				ui->lblStatus->setText(tr("Failed to add role.") + QString::fromStdString(response.error().toString()));
 			}
 			else{
-				callSetUserSettings();
+				callback();
 			}
 		}
 		else{
@@ -142,7 +164,7 @@ void DlgAddEditUser::callCreateRoleAndSetSettings(const std::string &role_name)
 	shv::broker::AclRole role(0);
 
 	shv::chainpack::RpcValue::List params{role_name, role.toRpcValueMap()};
-	m_rpcConnection->callShvMethod(rqid, m_aclEtcRolesNodePath, SET_VALUE_METHOD, params);
+	m_rpcConnection->callShvMethod(rqid, aclEtcRolesNodePath(), SET_VALUE_METHOD, params);
 }
 
 void DlgAddEditUser::callGetUserSettings()
@@ -206,17 +228,22 @@ void DlgAddEditUser::callSetUserSettings()
 	}
 
 	shv::chainpack::RpcValue::List params{user(), m_user.toRpcValueMap()};
-	m_rpcConnection->callShvMethod(rqid, aclUsersShvPath(), SET_VALUE_METHOD, params);
+	m_rpcConnection->callShvMethod(rqid, aclEtcUsersNodePath(), SET_VALUE_METHOD, params);
 }
 
-const std::string &DlgAddEditUser::aclUsersShvPath()
+std::string DlgAddEditUser::aclEtcUsersNodePath()
 {
-	return m_aclEtcUsersNodePath;
+	return m_aclEtcNodePath + "/users";
+}
+
+std::string DlgAddEditUser::aclEtcRolesNodePath()
+{
+	return m_aclEtcNodePath + "/roles";
 }
 
 std::string DlgAddEditUser::userShvPath()
 {
-	return m_aclEtcUsersNodePath + '/' + user();
+	return aclEtcUsersNodePath() + '/' + user();
 }
 
 std::vector<std::string> DlgAddEditUser::roles()
