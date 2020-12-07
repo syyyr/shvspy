@@ -30,9 +30,10 @@ private:
 	void onEditUserClicked();
 	void onTableUsersDoubleClicked(QModelIndex ix);
 
+    std::string aclEtcUsersNodePath();
+
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
-	std::string m_aclEtcUsersNodePath;
-	std::string m_aclEtcRolesNodePath;
+	std::string m_aclEtcNodePath;
 };
 
 #endif // DLGUSERSEDITOR_H

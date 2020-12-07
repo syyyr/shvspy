@@ -20,7 +20,7 @@ class DlgAddEditUser : public QDialog
 
 public:
 	enum class DialogType {Add = 0, Edit, Count};
-	explicit DlgAddEditUser(QWidget *parent, shv::iotqt::rpc::ClientConnection *rpc_connection, const std::string &acl_etc_users_node_path, const std::string &acl_etc_roles_node_path, DlgAddEditUser::DialogType dt = DialogType::Add);
+	explicit DlgAddEditUser(QWidget *parent, shv::iotqt::rpc::ClientConnection *rpc_connection, const std::string &acl_etc_node_path, DlgAddEditUser::DialogType dt = DialogType::Add);
 	~DlgAddEditUser() override;
 
 	DialogType dialogType();
@@ -33,12 +33,14 @@ public:
 private:
 	void onShowPasswordClicked();
 	void onSelectRolesClicked();
+    void execSelectRolesDialog();
 
-	void callCreateRoleAndSetSettings(const std::string &role_name);
+	void callCreateRole(const std::string &role_name, std::function<void()> callback);
 	void callSetUserSettings();
 	void callGetUserSettings();
 
-	const std::string &aclUsersShvPath();
+    std::string aclEtcUsersNodePath();
+	std::string aclEtcRolesNodePath();
 	std::string userShvPath();
 
 	std::vector<std::string> roles();
@@ -48,8 +50,7 @@ private:
 	Ui::DlgAddEditUser *ui;
 	DialogType m_dialogType;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
-	std::string m_aclEtcUsersNodePath;
-	std::string m_aclEtcRolesNodePath;
+	std::string m_aclEtcNodePath;
 	shv::broker::AclUser m_user;
 };
 
