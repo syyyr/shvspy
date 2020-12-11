@@ -31,6 +31,7 @@ DlgRolesEditor::DlgRolesEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	connect(ui->pbDeleteRole, &QPushButton::clicked, this, &DlgRolesEditor::onDeleteRoleClicked);
 	connect(ui->pbEditRole, &QPushButton::clicked, this, &DlgRolesEditor::onEditRoleClicked);
 	connect(ui->twRoles, &QTableWidget::doubleClicked, this, &DlgRolesEditor::onTableRoleDoubleClicked);
+	connect(ui->leFilter, &QLineEdit::textChanged, this, &DlgRolesEditor::setFilter);
 
 	setStatusText(QString());
 }
@@ -135,6 +136,12 @@ void DlgRolesEditor::listRoles()
 	if (m_rpcConnection == nullptr)
 		return;
 
+	for (int i = 0; i < ui->twRoles->rowCount(); ++i) {
+		ui->twRoles->takeItem(i, 0);
+	}
+	qDeleteAll(m_tableRows);
+	m_tableRows.clear();
+
 	ui->twRoles->clearContents();
 	ui->twRoles->setRowCount(0);
 
@@ -151,11 +158,11 @@ void DlgRolesEditor::listRoles()
 					shv::chainpack::RpcValue::List res = response.result().toList();
 
 					for (size_t i = 0; i < res.size(); i++){
-						ui->twRoles->insertRow(static_cast<int>(i));
 						QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(res.at(i).toStdString()));
 						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						ui->twRoles->setItem(i, 0, item);
+						m_tableRows << item;
 					}
+					setFilter(ui->leFilter->text());
 				}
 				setStatusText(QString());
 			}
@@ -207,3 +214,23 @@ void DlgRolesEditor::setStatusText(const QString &txt)
 	}
 }
 
+void DlgRolesEditor::setFilter(const QString &filter)
+{
+	QString l_filter = filter.toLower().trimmed();
+	for (int i = 0; i < ui->twRoles->rowCount(); ++i) {
+		ui->twRoles->takeItem(i, 0);
+	}
+	int j = 0;
+	for (QTableWidgetItem *item : m_tableRows) {
+		if (item->text().toLower().contains(l_filter)) {
+			if (ui->twRoles->rowCount() <= j) {
+				ui->twRoles->insertRow(j);
+			}
+			ui->twRoles->setItem(j, 0, item);
+			++j;
+		}
+	}
+	while (j < ui->twRoles->rowCount()) {
+		ui->twRoles->removeRow(j);
+	}
+}

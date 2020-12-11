@@ -10,6 +10,8 @@ namespace Ui {
 class DlgUsersEditor;
 }
 
+class QTableWidgetItem;
+
 class DlgUsersEditor : public QDialog
 {
 	Q_OBJECT
@@ -31,9 +33,11 @@ private:
 	void onTableUsersDoubleClicked(QModelIndex ix);
 
     std::string aclEtcUsersNodePath();
+	void setFilter(const QString &filter);
 
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	std::string m_aclEtcNodePath;
+	QVector<QTableWidgetItem*> m_tableRows;
 };
 
 #endif // DLGUSERSEDITOR_H

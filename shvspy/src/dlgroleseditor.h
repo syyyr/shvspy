@@ -12,6 +12,8 @@ namespace Ui {
 class DlgRolesEditor;
 }
 
+class QTableWidgetItem;
+
 class DlgRolesEditor : public QDialog
 {
 	Q_OBJECT
@@ -35,10 +37,13 @@ private:
 	void onTableRoleDoubleClicked(QModelIndex ix);
 
 	void setStatusText(const QString &txt);
+	void setFilter(const QString &filter);
+
 private:
 	Ui::DlgRolesEditor *ui;
 	std::string m_aclEtcNodePath;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
+	QVector<QTableWidgetItem*> m_tableRows;
 };
 
 #endif // DLGROLESEDITOR_H

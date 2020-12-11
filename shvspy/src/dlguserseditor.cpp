@@ -39,6 +39,7 @@ DlgUsersEditor::DlgUsersEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	connect(ui->pbDeleteUser, &QPushButton::clicked, this, &DlgUsersEditor::onDelUserClicked);
 	connect(ui->pbEditUser, &QPushButton::clicked, this, &DlgUsersEditor::onEditUserClicked);
 	connect(ui->twUsers, &QTableWidget::doubleClicked, this, &DlgUsersEditor::onTableUsersDoubleClicked);
+	connect(ui->leFilter, &QLineEdit::textChanged, this, &DlgUsersEditor::setFilter);
 }
 
 DlgUsersEditor::~DlgUsersEditor()
@@ -57,6 +58,12 @@ void DlgUsersEditor::listUsers()
 	if (m_rpcConnection == nullptr)
 		return;
 
+	for (int i = 0; i < ui->twUsers->rowCount(); ++i) {
+		ui->twUsers->takeItem(i, 0);
+	}
+	qDeleteAll(m_tableRows);
+	m_tableRows.clear();
+
 	ui->twUsers->clearContents();
 	ui->twUsers->setRowCount(0);
 
@@ -73,11 +80,11 @@ void DlgUsersEditor::listUsers()
 					shv::chainpack::RpcValue::List res = response.result().toList();
 
 					for (size_t i = 0; i < res.size(); i++){
-						ui->twUsers->insertRow(static_cast<int>(i));
 						QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(res.at(i).toStdString()));
 						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						ui->twUsers->setItem(i, 0, item);
+						m_tableRows << item;
 					}
+					setFilter(ui->leFilter->text());
 				}
 			}
 		}
@@ -166,3 +173,23 @@ std::string DlgUsersEditor::aclEtcUsersNodePath()
     return m_aclEtcNodePath + "/users";
 }
 
+void DlgUsersEditor::setFilter(const QString &filter)
+{
+	QString l_filter = filter.toLower().trimmed();
+	for (int i = 0; i < ui->twUsers->rowCount(); ++i) {
+		ui->twUsers->takeItem(i, 0);
+	}
+	int j = 0;
+	for (QTableWidgetItem *item : m_tableRows) {
+		if (item->text().toLower().contains(l_filter)) {
+			if (ui->twUsers->rowCount() <= j) {
+				ui->twUsers->insertRow(j);
+			}
+			ui->twUsers->setItem(j, 0, item);
+			++j;
+		}
+	}
+	while (j < ui->twUsers->rowCount()) {
+		ui->twUsers->removeRow(j);
+	}
+}
