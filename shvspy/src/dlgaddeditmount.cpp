@@ -45,13 +45,54 @@ void DlgAddEditMount::init(const QString &device_id)
 void DlgAddEditMount::accept()
 {
 	if (dialogType() == DialogType::Add){
-		setStatusText(tr("Adding new mount ..."));
-		callSetMountSettings();
+		setStatusText(tr("Checking mount ID existence"));
+		checkExistingMountId([this](bool success, bool is_duplicate) {
+			if (success) {
+				if (is_duplicate) {
+					setStatusText(tr("Cannot add mount point, mount ID is duplicate!"));
+					return;
+				}
+				setStatusText(tr("Adding new mount ..."));
+				callSetMountSettings();
+			}
+		});
 	}
 	else if (dialogType() == DialogType::Edit){
 		setStatusText(tr("Updating mount definition ..."));
 		callSetMountSettings();
 	}
+}
+
+void DlgAddEditMount::checkExistingMountId(std::function<void(bool, bool)> callback)
+{
+	int rqid = m_rpcConnection->nextRequestId();
+	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
+
+	cb->start(this, [this, callback](const shv::chainpack::RpcResponse &response) {
+		if (response.isSuccess()) {
+			if (!response.result().isList()) {
+				setStatusText(tr("Failed to check mount ID. Bad server response format."));
+				callback(false, false);
+			}
+			else {
+				std::string mount_id = ui->leDeviceId->text().toStdString();
+				const shv::chainpack::RpcValue::List &res = response.result().toList();
+				for (const shv::chainpack::RpcValue &item : res) {
+					if (item.toString() == mount_id) {
+						callback(true, true);
+						return;
+					}
+				}
+				callback(true, false);
+			}
+		}
+		else {
+			setStatusText(tr("Failed to check mount ID.") + " " + QString::fromStdString(response.error().toString()));
+			callback(false, false);
+		}
+	});
+
+	m_rpcConnection->callShvMethod(rqid, aclEtcMountNodePath(), shv::chainpack::Rpc::METH_LS);
 }
 
 void DlgAddEditMount::callSetMountSettings()

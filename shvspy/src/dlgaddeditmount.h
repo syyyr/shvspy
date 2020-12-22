@@ -32,6 +32,7 @@ public:
 private:
 	void callSetMountSettings();
 	void callGetMountSettings();
+	void checkExistingMountId(std::function<void(bool, bool)> callback);
 
 	std::string aclEtcMountNodePath();
 	std::string mountShvPath();
