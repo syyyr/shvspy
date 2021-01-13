@@ -10,7 +10,8 @@ namespace Ui {
 class DlgUsersEditor;
 }
 
-class QTableWidgetItem;
+class QStandardItemModel;
+class QSortFilterProxyModel;
 
 class DlgUsersEditor : public QDialog
 {
@@ -37,7 +38,8 @@ private:
 
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	std::string m_aclEtcNodePath;
-	QVector<QTableWidgetItem*> m_tableRows;
+	QStandardItemModel *m_dataModel;
+	QSortFilterProxyModel *m_modelProxy;
 };
 
 #endif // DLGUSERSEDITOR_H

@@ -11,6 +11,8 @@
 
 #include <QDialogButtonBox>
 #include <QMessageBox>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 #include <QTableWidgetItem>
 
 static const std::string VALUE_METHOD = "value";
@@ -27,8 +29,15 @@ DlgUsersEditor::DlgUsersEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	static constexpr double ROW_HEIGHT_RATIO = 1.3;
 	static QStringList INFO_HEADER_NAMES {{ tr("User") }};
 
-	ui->twUsers->setColumnCount(INFO_HEADER_NAMES.count());
-	ui->twUsers->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
+	m_dataModel = new QStandardItemModel(this);
+	m_dataModel->setColumnCount(INFO_HEADER_NAMES.count());
+	m_dataModel->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
+
+	m_modelProxy = new QSortFilterProxyModel(this);
+	m_modelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	m_modelProxy->setSourceModel(m_dataModel);
+	ui->twUsers->setModel(m_modelProxy);
+
 	ui->twUsers->horizontalHeader()->setStretchLastSection(true);
 	ui->twUsers->verticalHeader()->setDefaultSectionSize(ui->twUsers->fontMetrics().height() * ROW_HEIGHT_RATIO);
 	ui->twUsers->verticalHeader()->setVisible(false);
@@ -39,7 +48,7 @@ DlgUsersEditor::DlgUsersEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	connect(ui->pbDeleteUser, &QPushButton::clicked, this, &DlgUsersEditor::onDelUserClicked);
 	connect(ui->pbEditUser, &QPushButton::clicked, this, &DlgUsersEditor::onEditUserClicked);
 	connect(ui->twUsers, &QTableWidget::doubleClicked, this, &DlgUsersEditor::onTableUsersDoubleClicked);
-	connect(ui->leFilter, &QLineEdit::textChanged, this, &DlgUsersEditor::setFilter);
+	connect(ui->leFilter, &QLineEdit::textChanged, m_modelProxy, &QSortFilterProxyModel::setFilterFixedString);
 }
 
 DlgUsersEditor::~DlgUsersEditor()
@@ -58,14 +67,7 @@ void DlgUsersEditor::listUsers()
 	if (m_rpcConnection == nullptr)
 		return;
 
-	for (int i = 0; i < ui->twUsers->rowCount(); ++i) {
-		ui->twUsers->takeItem(i, 0);
-	}
-	qDeleteAll(m_tableRows);
-	m_tableRows.clear();
-
-	ui->twUsers->clearContents();
-	ui->twUsers->setRowCount(0);
+	m_dataModel->removeRows(0, m_dataModel->rowCount());
 
 	int rqid = m_rpcConnection->nextRequestId();
 	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
@@ -78,13 +80,12 @@ void DlgUsersEditor::listUsers()
 			else{
 				if (response.result().isList()){
 					shv::chainpack::RpcValue::List res = response.result().toList();
-
+					m_dataModel->setRowCount(res.size());
 					for (size_t i = 0; i < res.size(); i++){
-						QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(res.at(i).toStdString()));
+						QStandardItem *item = new QStandardItem(QString::fromStdString(res.at(i).toStdString()));
 						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						m_tableRows << item;
+						m_dataModel->setItem(i, 0, item);
 					}
-					setFilter(ui->leFilter->text());
 				}
 			}
 		}
@@ -98,7 +99,7 @@ void DlgUsersEditor::listUsers()
 
 QString DlgUsersEditor::selectedUser()
 {
-	return (ui->twUsers->currentIndex().isValid()) ? ui->twUsers->currentItem()->text() : QString();
+	return (ui->twUsers->currentIndex().isValid()) ? ui->twUsers->currentIndex().data().toString() : QString();
 }
 
 void DlgUsersEditor::onAddUserClicked()
@@ -171,25 +172,4 @@ void DlgUsersEditor::onTableUsersDoubleClicked(QModelIndex ix)
 std::string DlgUsersEditor::aclEtcUsersNodePath()
 {
     return m_aclEtcNodePath + "/users";
-}
-
-void DlgUsersEditor::setFilter(const QString &filter)
-{
-	QString l_filter = filter.toLower().trimmed();
-	for (int i = 0; i < ui->twUsers->rowCount(); ++i) {
-		ui->twUsers->takeItem(i, 0);
-	}
-	int j = 0;
-	for (QTableWidgetItem *item : m_tableRows) {
-		if (item->text().toLower().contains(l_filter)) {
-			if (ui->twUsers->rowCount() <= j) {
-				ui->twUsers->insertRow(j);
-			}
-			ui->twUsers->setItem(j, 0, item);
-			++j;
-		}
-	}
-	while (j < ui->twUsers->rowCount()) {
-		ui->twUsers->removeRow(j);
-	}
 }

@@ -13,6 +13,9 @@ namespace Ui {
 class DlgMountsEditor;
 }
 
+class QStandardItemModel;
+class QSortFilterProxyModel;
+
 class DlgMountsEditor : public QDialog
 {
 	Q_OBJECT
@@ -24,35 +27,34 @@ public:
 
 private:
 	std::string aclEtcMountsNodePath();
-	//std::string aclEtcAccessNodePath();
 
 	QString selectedMount();
 	void listMounts();
-	void getMountPoint(const QString &id);
-	void getMountDescription(const QString &id);
-	//void callDeleteAccessForMount(const std::string &mount);
+	void getMountPointDefinition(const QString &id);
 
 	void onAddMountClicked();
 	void onDeleteMountClicked();
 	void onEditMountClicked();
 	void onTableMountDoubleClicked(QModelIndex ix);
 	void onRpcCallsFinished();
-	void setFilter(const QString &filter);
 
 	void setStatusText(const QString &txt);
-private:
+	void checkRpcCallsFinished();
+
+	enum RpcCallStatus { Unfinished, Ok, Error };
 	struct MountPointInfo {
 		QString id;
 		QString mountPoint;
 		QString description;
+		RpcCallStatus status = Unfinished;
 	};
 	Ui::DlgMountsEditor *ui;
 	std::string m_aclEtcNodePath;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	QMap<QString, MountPointInfo> m_mountPoints;
-	bool m_rpcCallFailed;
-	int m_rpcCallsToComplete;
 	QString m_lastCurrentId;
+	QStandardItemModel *m_dataModel;
+	QSortFilterProxyModel *m_modelProxy;
 };
 
 #endif // DLGMOUNTSEDITOR_H

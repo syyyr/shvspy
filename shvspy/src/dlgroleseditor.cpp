@@ -4,6 +4,8 @@
 #include "dlgaddeditrole.h"
 #include "shv/core/assert.h"
 #include <QMessageBox>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 
 static const std::string VALUE_METHOD = "value";
 static const std::string SET_VALUE_METHOD = "setValue";
@@ -21,8 +23,15 @@ DlgRolesEditor::DlgRolesEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	static constexpr double ROW_HEIGHT_RATIO = 1.3;
 	static QStringList INFO_HEADER_NAMES {{ tr("Role") }};
 
-	ui->twRoles->setColumnCount(INFO_HEADER_NAMES.count());
-	ui->twRoles->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
+	m_dataModel = new QStandardItemModel(this);
+	m_dataModel->setColumnCount(INFO_HEADER_NAMES.count());
+	m_dataModel->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
+
+	m_modelProxy = new QSortFilterProxyModel(this);
+	m_modelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	m_modelProxy->setSourceModel(m_dataModel);
+	ui->twRoles->setModel(m_modelProxy);
+
 	ui->twRoles->horizontalHeader()->setStretchLastSection(true);
 	ui->twRoles->verticalHeader()->setDefaultSectionSize(ui->twRoles->fontMetrics().height() * ROW_HEIGHT_RATIO);
 	ui->twRoles->verticalHeader()->setVisible(false);
@@ -30,8 +39,8 @@ DlgRolesEditor::DlgRolesEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	connect(ui->pbAddRole, &QPushButton::clicked, this, &DlgRolesEditor::onAddRoleClicked);
 	connect(ui->pbDeleteRole, &QPushButton::clicked, this, &DlgRolesEditor::onDeleteRoleClicked);
 	connect(ui->pbEditRole, &QPushButton::clicked, this, &DlgRolesEditor::onEditRoleClicked);
-	connect(ui->twRoles, &QTableWidget::doubleClicked, this, &DlgRolesEditor::onTableRoleDoubleClicked);
-	connect(ui->leFilter, &QLineEdit::textChanged, this, &DlgRolesEditor::setFilter);
+	connect(ui->twRoles, &QTableView::doubleClicked, this, &DlgRolesEditor::onTableRoleDoubleClicked);
+	connect(ui->leFilter, &QLineEdit::textChanged, m_modelProxy, &QSortFilterProxyModel::setFilterFixedString);
 
 	setStatusText(QString());
 }
@@ -59,7 +68,7 @@ std::string DlgRolesEditor::aclEtcAccessNodePath()
 
 QString DlgRolesEditor::selectedRole()
 {
-	return (ui->twRoles->currentIndex().isValid()) ? ui->twRoles->currentItem()->text() : QString();
+	return (ui->twRoles->currentIndex().isValid()) ? ui->twRoles->currentIndex().data().toString() : QString();
 }
 
 void DlgRolesEditor::onAddRoleClicked()
@@ -136,14 +145,7 @@ void DlgRolesEditor::listRoles()
 	if (m_rpcConnection == nullptr)
 		return;
 
-	for (int i = 0; i < ui->twRoles->rowCount(); ++i) {
-		ui->twRoles->takeItem(i, 0);
-	}
-	qDeleteAll(m_tableRows);
-	m_tableRows.clear();
-
-	ui->twRoles->clearContents();
-	ui->twRoles->setRowCount(0);
+	m_dataModel->removeRows(0, m_dataModel->rowCount());
 
 	int rqid = m_rpcConnection->nextRequestId();
 	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
@@ -156,13 +158,12 @@ void DlgRolesEditor::listRoles()
 			else{
 				if (response.result().isList()){
 					shv::chainpack::RpcValue::List res = response.result().toList();
-
+					m_dataModel->setRowCount(res.size());
 					for (size_t i = 0; i < res.size(); i++){
-						QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(res.at(i).toStdString()));
+						QStandardItem *item = new QStandardItem(QString::fromStdString(res.at(i).toStdString()));
 						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						m_tableRows << item;
+						m_dataModel->setItem(i, 0, item);
 					}
-					setFilter(ui->leFilter->text());
 				}
 				setStatusText(QString());
 			}
@@ -211,26 +212,5 @@ void DlgRolesEditor::setStatusText(const QString &txt)
 	else {
 		ui->lblStatus->show();
 		ui->lblStatus->setText(txt);
-	}
-}
-
-void DlgRolesEditor::setFilter(const QString &filter)
-{
-	QString l_filter = filter.toLower().trimmed();
-	for (int i = 0; i < ui->twRoles->rowCount(); ++i) {
-		ui->twRoles->takeItem(i, 0);
-	}
-	int j = 0;
-	for (QTableWidgetItem *item : m_tableRows) {
-		if (item->text().toLower().contains(l_filter)) {
-			if (ui->twRoles->rowCount() <= j) {
-				ui->twRoles->insertRow(j);
-			}
-			ui->twRoles->setItem(j, 0, item);
-			++j;
-		}
-	}
-	while (j < ui->twRoles->rowCount()) {
-		ui->twRoles->removeRow(j);
 	}
 }

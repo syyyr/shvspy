@@ -29,7 +29,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="twMounts">
+    <widget class="QTableView" name="twMounts">
      <property name="alternatingRowColors">
       <bool>true</bool>
      </property>

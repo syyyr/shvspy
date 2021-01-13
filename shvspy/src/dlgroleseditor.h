@@ -12,7 +12,8 @@ namespace Ui {
 class DlgRolesEditor;
 }
 
-class QTableWidgetItem;
+class QSortFilterProxyModel;
+class QStandardItemModel;
 
 class DlgRolesEditor : public QDialog
 {
@@ -37,13 +38,13 @@ private:
 	void onTableRoleDoubleClicked(QModelIndex ix);
 
 	void setStatusText(const QString &txt);
-	void setFilter(const QString &filter);
 
 private:
 	Ui::DlgRolesEditor *ui;
 	std::string m_aclEtcNodePath;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
-	QVector<QTableWidgetItem*> m_tableRows;
+	QStandardItemModel *m_dataModel;
+	QSortFilterProxyModel *m_modelProxy;
 };
 
 #endif // DLGROLESEDITOR_H
