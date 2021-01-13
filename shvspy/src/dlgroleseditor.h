@@ -12,6 +12,9 @@ namespace Ui {
 class DlgRolesEditor;
 }
 
+class QSortFilterProxyModel;
+class QStandardItemModel;
+
 class DlgRolesEditor : public QDialog
 {
 	Q_OBJECT
@@ -35,10 +38,13 @@ private:
 	void onTableRoleDoubleClicked(QModelIndex ix);
 
 	void setStatusText(const QString &txt);
+
 private:
 	Ui::DlgRolesEditor *ui;
 	std::string m_aclEtcNodePath;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
+	QStandardItemModel *m_dataModel;
+	QSortFilterProxyModel *m_modelProxy;
 };
 
 #endif // DLGROLESEDITOR_H

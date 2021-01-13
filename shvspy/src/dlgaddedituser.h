@@ -38,6 +38,7 @@ private:
 	void callCreateRole(const std::string &role_name, std::function<void()> callback);
 	void callSetUserSettings();
 	void callGetUserSettings();
+	void checkExistingUser(std::function<void(bool, bool)> callback);
 
     std::string aclEtcUsersNodePath();
 	std::string aclEtcRolesNodePath();

@@ -74,16 +74,25 @@ void DlgAddEditUser::accept()
 {
 	if (dialogType() == DialogType::Add){
 		if ((!user().empty()) && (!password().isEmpty())){
-			ui->lblStatus->setText(tr("Adding new user"));
+			ui->lblStatus->setText(tr("Checking user name existence"));
+			checkExistingUser([this](bool success, bool is_duplicate) {
+				if (success) {
+					if (is_duplicate) {
+						ui->lblStatus->setText(tr("Cannot add user, user name is duplicate!"));
+						return;
+					}
+					ui->lblStatus->setText(tr("Adding new user"));
 
-			if (ui->chbCreateRole->isChecked()){
-				callCreateRole(user(), [this](){
-					callSetUserSettings();
-				});
-			}
-			else{
-				callSetUserSettings();
-			}
+					if (ui->chbCreateRole->isChecked()){
+						callCreateRole(user(), [this](){
+							callSetUserSettings();
+						});
+					}
+					else{
+						callSetUserSettings();
+					}
+				}
+			});
 		}
 		else {
 			ui->lblStatus->setText(tr("User name or password is empty."));
@@ -101,6 +110,38 @@ void DlgAddEditUser::accept()
 			callSetUserSettings();
 		}
 	}
+}
+
+void DlgAddEditUser::checkExistingUser(std::function<void(bool, bool)> callback)
+{
+	int rqid = m_rpcConnection->nextRequestId();
+	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
+
+	cb->start(this, [this, callback](const shv::chainpack::RpcResponse &response) {
+		if (response.isSuccess()) {
+			if (!response.result().isList()) {
+				ui->lblStatus->setText(tr("Failed to check user name. Bad server response format."));
+				callback(false, false);
+			}
+			else {
+				std::string user_name = user();
+				const shv::chainpack::RpcValue::List &res = response.result().toList();
+				for (const shv::chainpack::RpcValue &item : res) {
+					if (item.toString() == user_name) {
+						callback(true, true);
+						return;
+					}
+				}
+				callback(true, false);
+			}
+		}
+		else {
+			ui->lblStatus->setText(tr("Failed to check user name.") + " " + QString::fromStdString(response.error().toString()));
+			callback(false, false);
+		}
+	});
+
+	m_rpcConnection->callShvMethod(rqid, aclEtcUsersNodePath(), shv::chainpack::Rpc::METH_LS);
 }
 
 void DlgAddEditUser::onShowPasswordClicked()

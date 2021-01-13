@@ -15,6 +15,20 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Filter:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="leFilter"/>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QGroupBox" name="gbUserList">
      <property name="font">
       <font>
@@ -22,12 +36,9 @@
        <bold>true</bold>
       </font>
      </property>
-     <property name="title">
-      <string>Users</string>
-     </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QTableWidget" name="twUsers">
+       <widget class="QTableView" name="twUsers">
         <property name="font">
          <font>
           <weight>50</weight>
@@ -36,6 +47,9 @@
         </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
         </property>
        </widget>
       </item>
@@ -98,7 +112,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>

@@ -33,6 +33,7 @@ public:
 private:
 	void callSetRoleSettings();
 	void callGetRoleSettings();
+	void checkExistingRole(std::function<void(bool, bool)> callback);
 
 	void callSetAccessRulesForRole();
 	void callGetAccessRulesForRole();

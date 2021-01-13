@@ -4,6 +4,8 @@
 #include "dlgaddeditmount.h"
 #include "shv/core/assert.h"
 #include <QMessageBox>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 
 static const std::string VALUE_METHOD = "value";
 static const std::string SET_VALUE_METHOD = "setValue";
@@ -19,18 +21,28 @@ DlgMountsEditor::DlgMountsEditor(QWidget *parent, shv::iotqt::rpc::ClientConnect
 	m_rpcConnection = rpc_connection;
 
 	static constexpr double ROW_HEIGHT_RATIO = 1.3;
-	static QStringList INFO_HEADER_NAMES {{ tr("Mount") }};
+	static QStringList INFO_HEADER_NAMES { tr("Device ID"), tr("Mount point"), tr("Description") };
 
-	ui->twMounts->setColumnCount(INFO_HEADER_NAMES.count());
-	ui->twMounts->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
+	m_dataModel = new QStandardItemModel(this);
+	m_dataModel->setColumnCount(INFO_HEADER_NAMES.count());
+	m_dataModel->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
+
+	m_modelProxy = new QSortFilterProxyModel(this);
+	m_modelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	m_modelProxy->setSourceModel(m_dataModel);
+	m_modelProxy->setFilterKeyColumn(-1);
+	ui->twMounts->setModel(m_modelProxy);
+
 	ui->twMounts->horizontalHeader()->setStretchLastSection(true);
 	ui->twMounts->verticalHeader()->setDefaultSectionSize(ui->twMounts->fontMetrics().height() * ROW_HEIGHT_RATIO);
 	ui->twMounts->verticalHeader()->setVisible(false);
+	ui->twMounts->setSelectionBehavior(QAbstractItemView::SelectRows);
 
 	connect(ui->pbAddMount, &QPushButton::clicked, this, &DlgMountsEditor::onAddMountClicked);
 	connect(ui->pbDeleteMount, &QPushButton::clicked, this, &DlgMountsEditor::onDeleteMountClicked);
 	connect(ui->pbEditMount, &QPushButton::clicked, this, &DlgMountsEditor::onEditMountClicked);
-	connect(ui->twMounts, &QTableWidget::doubleClicked, this, &DlgMountsEditor::onTableMountDoubleClicked);
+	connect(ui->twMounts, &QTableView::doubleClicked, this, &DlgMountsEditor::onTableMountDoubleClicked);
+	connect(ui->leFilter, &QLineEdit::textChanged, m_modelProxy, &QSortFilterProxyModel::setFilterFixedString);
 
 	setStatusText(QString());
 }
@@ -51,14 +63,15 @@ std::string DlgMountsEditor::aclEtcMountsNodePath()
 	return m_aclEtcNodePath + "/mounts";
 }
 
-//std::string DlgMountsEditor::aclEtcAccessNodePath()
-//{
-//	return m_aclEtcNodePath + "/access";
-//}
-
 QString DlgMountsEditor::selectedMount()
 {
-	return (ui->twMounts->currentIndex().isValid()) ? ui->twMounts->currentItem()->text() : QString();
+	QModelIndex current_index = ui->twMounts->currentIndex();
+	if (current_index.isValid()) {
+		return m_modelProxy->index(current_index.row(), 0).data().toString();
+	}
+	else {
+		return QString();
+	}
 }
 
 void DlgMountsEditor::onAddMountClicked()
@@ -89,9 +102,8 @@ void DlgMountsEditor::onDeleteMountClicked()
 				if(response.isError()) {
 					setStatusText(tr("Failed to delete mount definition.") + " " + QString::fromStdString(response.error().toString()));
 				}
-				else{
+				else {
 					listMounts();
-					setStatusText(QString());
 				}
 			}
 			else{
@@ -129,42 +141,115 @@ void DlgMountsEditor::onTableMountDoubleClicked(QModelIndex ix)
 	onEditMountClicked();
 }
 
+void DlgMountsEditor::onRpcCallsFinished()
+{
+	ui->pbAddMount->setEnabled(true);
+	ui->pbEditMount->setEnabled(true);
+	ui->pbDeleteMount->setEnabled(true);
+	ui->leFilter->setEnabled(true);
+	setStatusText(QString());
+
+	m_dataModel->setRowCount(m_mountPoints.count());
+	int i = 0;
+	for (const MountPointInfo &info : m_mountPoints) {
+		QStandardItem *id_item = new QStandardItem(info.id);
+		id_item->setFlags(id_item->flags() & ~Qt::ItemIsEditable);
+		m_dataModel->setItem(i, 0, id_item);
+
+		QStandardItem *mountpoint_item = new QStandardItem(info.mountPoint);
+		mountpoint_item->setFlags(mountpoint_item->flags() & ~Qt::ItemIsEditable);
+		m_dataModel->setItem(i, 1, mountpoint_item);
+
+		QStandardItem *description_item = new QStandardItem(info.description);
+		description_item->setFlags(description_item->flags() & ~Qt::ItemIsEditable);
+		m_dataModel->setItem(i, 2, description_item);
+
+		++i;
+	}
+
+	if (!m_lastCurrentId.isEmpty()) {
+		for (int i = 0; i < m_modelProxy->rowCount(); ++i) {
+			if (m_modelProxy->index(i, 0).data().toString() == m_lastCurrentId) {
+				ui->twMounts->setCurrentIndex(m_modelProxy->index(i, 0));
+			}
+		}
+	}
+	m_mountPoints.clear();
+}
+
 void DlgMountsEditor::listMounts()
 {
 	if (m_rpcConnection == nullptr)
 		return;
 
-	ui->twMounts->clearContents();
-	ui->twMounts->setRowCount(0);
+	m_lastCurrentId = selectedMount();
+
+	m_dataModel->removeRows(0, m_dataModel->rowCount());
+	m_mountPoints.clear();
+
+	ui->pbAddMount->setEnabled(false);
+	ui->pbEditMount->setEnabled(false);
+	ui->pbDeleteMount->setEnabled(false);
+	ui->leFilter->setEnabled(false);
+	setStatusText(tr("Loading..."));
 
 	int rqid = m_rpcConnection->nextRequestId();
 	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
 
 	cb->start(this, [this](const shv::chainpack::RpcResponse &response) {
-		if(response.isValid()){
-			if(response.isError()) {
-				setStatusText(tr("Failed to load mount definition.") + " " + QString::fromStdString(response.error().toString()));
-			}
-			else{
-				if (response.result().isList()){
-					shv::chainpack::RpcValue::List res = response.result().toList();
+		if (response.isSuccess()){
+			if (response.result().isList()){
+				const shv::chainpack::RpcValue::List &res = response.result().toList();
 
-					for (size_t i = 0; i < res.size(); i++){
-						ui->twMounts->insertRow(static_cast<int>(i));
-						QTableWidgetItem *item = new QTableWidgetItem(QString::fromStdString(res.at(i).toStdString()));
-						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						ui->twMounts->setItem(i, 0, item);
-					}
+				for (size_t i = 0; i < res.size(); i++){
+					QString id = QString::fromStdString(res.at(i).toString());
+					m_mountPoints[id].id = id;
+					getMountPointDefinition(id);
 				}
-				setStatusText(QString());
 			}
 		}
 		else{
-			setStatusText(tr("Request timeout expired"));
+			setStatusText(tr("Failed to load mount definition.") + " " + QString::fromStdString(response.error().toString()));
 		}
 	});
 
 	m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath(), shv::chainpack::Rpc::METH_LS);
+}
+
+void DlgMountsEditor::getMountPointDefinition(const QString &id)
+{
+	if (m_rpcConnection == nullptr)
+		return;
+
+	int rqid = m_rpcConnection->nextRequestId();
+	shv::iotqt::rpc::RpcResponseCallBack *cb = new shv::iotqt::rpc::RpcResponseCallBack(m_rpcConnection, rqid, this);
+
+	cb->start(this, [this, id](const shv::chainpack::RpcResponse &response) {
+		if (response.isSuccess()) {
+			m_mountPoints[id].status = Ok;
+			if (response.result().isMap()){
+				m_mountPoints[id].mountPoint = QString::fromStdString(response.result().at("mountPoint").toString());
+				m_mountPoints[id].description = QString::fromStdString(response.result().at("description").toString());
+			}
+		}
+		else {
+			m_mountPoints[id].status = Error;
+			setStatusText(tr("Failed to load mountpoint definition.") + " " + QString::fromStdString(response.error().toString()));
+		}
+		checkRpcCallsFinished();
+	});
+
+	m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath() + "/" + id.toStdString(), VALUE_METHOD);
+}
+
+void DlgMountsEditor::checkRpcCallsFinished()
+{
+	for (const auto &mount_point : m_mountPoints) {
+		if (mount_point.status != Ok) {
+			return;
+		}
+	}
+	onRpcCallsFinished();
 }
 
 void DlgMountsEditor::setStatusText(const QString &txt)

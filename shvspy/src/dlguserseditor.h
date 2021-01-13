@@ -10,6 +10,9 @@ namespace Ui {
 class DlgUsersEditor;
 }
 
+class QStandardItemModel;
+class QSortFilterProxyModel;
+
 class DlgUsersEditor : public QDialog
 {
 	Q_OBJECT
@@ -31,9 +34,12 @@ private:
 	void onTableUsersDoubleClicked(QModelIndex ix);
 
     std::string aclEtcUsersNodePath();
+	void setFilter(const QString &filter);
 
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	std::string m_aclEtcNodePath;
+	QStandardItemModel *m_dataModel;
+	QSortFilterProxyModel *m_modelProxy;
 };
 
 #endif // DLGUSERSEDITOR_H
