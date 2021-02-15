@@ -197,7 +197,7 @@ shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 		{
 			QVariant v = m_serverPropeties.value("rpc.heartbeatInterval");
 			if(v.isValid())
-				opts.setHeartbeatInterval(v.toInt());
+				opts.setHeartBeatInterval(v.toInt());
 		}
 		{
 			QVariant v = m_serverPropeties.value("rpc.defaultRpcTimeout");

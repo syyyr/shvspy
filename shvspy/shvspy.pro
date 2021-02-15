@@ -46,7 +46,7 @@ PROJECT_TOP_SRCDIR = $$PWD/../../..
 #include( $$PROJECT_TOP_SRCDIR/common.pri )
 
 INCLUDEPATH += \
-    $$LIBSHV_SRC_DIR/3rdparty/necrolog/include \
+    $$SHV_PROJECT_TOP_SRCDIR/3rdparty/necrolog/include \
     $$LIBSHV_SRC_DIR/libshvchainpack/include \
     $$LIBSHV_SRC_DIR/libshvcore/include \
     $$LIBSHV_SRC_DIR/libshvcoreqt/include \
