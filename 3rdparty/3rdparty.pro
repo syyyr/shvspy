@@ -8,6 +8,6 @@ SUBDIRS += \
   libshv/libshvcoreqt \
   libshv/libshviotqt \
   libshv/libshvvisu \
-  #libshv/libshvbroker \
+  libshv/libshvbroker \
 
 
