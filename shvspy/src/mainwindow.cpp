@@ -99,9 +99,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	});
 	connect(ui->tblAttributes, &QTableView::customContextMenuRequested, this, &MainWindow::onAttributesTableContexMenu);
 
-	connect(ui->tblAttributes, &QTableView::activated, [](const QModelIndex &ix) {
-		if(ix.column() == AttributesModel::ColBtRun)
-			TheApp::instance()->attributesModel()->callMethod(ix.row());
+	connect(ui->tblAttributes, &QTableView::activated, [this](const QModelIndex &ix) {
+		if(ix.column() == AttributesModel::ColBtRun) {
+			try {
+				TheApp::instance()->attributesModel()->callMethod(ix.row(), shv::core::Exception::Throw);
+			}  catch (const std::exception &e) {
+				QMessageBox::warning(this, tr("Method call error"), tr("Method call error: %1").arg(e.what()));
+			}
+		}
 	});
 	connect(ui->tblAttributes, &QTableView::doubleClicked, this, [this](const QModelIndex &ix) {
 		if (ix.column() == AttributesModel::ColResult) {

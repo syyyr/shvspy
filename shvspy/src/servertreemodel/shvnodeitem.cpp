@@ -307,7 +307,7 @@ void ShvNodeItem::setMethodParams(int method_ix, const shv::chainpack::RpcValue 
 	mtd.params = params;
 }
 
-unsigned ShvNodeItem::callMethod(int method_ix)
+unsigned ShvNodeItem::callMethod(int method_ix, bool throw_exc)
 {
 	//const QVector<ShvMetaMethod> &mm = m_methods();
 	if(method_ix < 0 || method_ix >= m_methods.count())
@@ -317,7 +317,7 @@ unsigned ShvNodeItem::callMethod(int method_ix)
 		return 0;
 	mtd.response = cp::RpcResponse();
 	ShvBrokerNodeItem *srv_nd = serverNode();
-	mtd.rpcRequestId = srv_nd->callNodeRpcMethod(shvPath(), mtd.method, mtd.params);
+	mtd.rpcRequestId = srv_nd->callNodeRpcMethod(shvPath(), mtd.method, mtd.params, throw_exc);
 	return mtd.rpcRequestId;
 }
 

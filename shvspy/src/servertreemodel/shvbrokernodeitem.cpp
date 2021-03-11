@@ -241,7 +241,10 @@ void ShvBrokerNodeItem::onBrokerConnectedChanged(bool is_connected)
 		m->load(this);
 	}
 	else {
-		close();
+		// do not close connection when connection drops
+		// we can test this way device auto-reconnect even in shvspy
+		// where it does not make a much sense
+		//close();
 	}
 
 	emit brokerConnectedChange(is_connected);
@@ -294,10 +297,12 @@ int ShvBrokerNodeItem::callUnsubscribe(const std::string &shv_path, std::string 
 	return rqid;
 }
 
-int ShvBrokerNodeItem::callNodeRpcMethod(const std::string &calling_node_shv_path, const std::string &method, const cp::RpcValue &params)
+int ShvBrokerNodeItem::callNodeRpcMethod(const std::string &calling_node_shv_path, const std::string &method, const cp::RpcValue &params, bool throw_exc)
 {
 	shvLogFuncFrame() << calling_node_shv_path;
 	shv::iotqt::rpc::ClientConnection *cc = clientConnection();
+	if(throw_exc && !cc->isBrokerConnected())
+		SHV_EXCEPTION("Broker is not connected.");
 	int rqid = cc->callShvMethod(calling_node_shv_path, method, params);
 	m_runningRpcRequests[rqid].shvPath = calling_node_shv_path;
 	return rqid;

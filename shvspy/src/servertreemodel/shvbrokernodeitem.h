@@ -42,7 +42,7 @@ public:
 
 	shv::iotqt::rpc::ClientConnection *clientConnection();
 
-	int callNodeRpcMethod(const std::string &calling_node_shv_path, const std::string &method, const shv::chainpack::RpcValue &params);
+	int callNodeRpcMethod(const std::string &calling_node_shv_path, const std::string &method, const shv::chainpack::RpcValue &params, bool throw_exc = false);
 
 	ShvNodeItem *findNode(const std::string &path, std::string *path_rest = nullptr);
 

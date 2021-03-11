@@ -7,8 +7,8 @@
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 
-static const std::string VALUE_METHOD = "value";
-static const std::string SET_VALUE_METHOD = "setValue";
+static const std::string METHOD_VALUE = "value";
+static const std::string METHOD_SET_VALUE = "setValue";
 
 DlgMountsEditor::DlgMountsEditor(QWidget *parent, shv::iotqt::rpc::ClientConnection *rpc_connection) :
 	QDialog(parent),
@@ -112,7 +112,7 @@ void DlgMountsEditor::onDeleteMountClicked()
 		});
 
 		shv::chainpack::RpcValue::List params{shv::chainpack::RpcValue::String(mount), {}};
-		m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath(), SET_VALUE_METHOD, params);
+		m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath(), METHOD_SET_VALUE, params);
 	}
 }
 
@@ -234,12 +234,13 @@ void DlgMountsEditor::getMountPointDefinition(const QString &id)
 		}
 		else {
 			m_mountPoints[id].status = Error;
-			setStatusText(tr("Failed to load mountpoint definition.") + " " + QString::fromStdString(response.error().toString()));
+			setStatusText(tr("Failed to load mountpoint definition for ID: ") + id
+						  + " - " + QString::fromStdString(response.errorString()));
 		}
 		checkRpcCallsFinished();
 	});
 
-	m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath() + "/" + id.toStdString(), VALUE_METHOD);
+	m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath() + "/" + id.toStdString(), METHOD_VALUE);
 }
 
 void DlgMountsEditor::checkRpcCallsFinished()

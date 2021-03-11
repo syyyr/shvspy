@@ -31,7 +31,7 @@ public:
 	QVariant headerData ( int section, Qt::Orientation o, int role = Qt::DisplayRole ) const Q_DECL_OVERRIDE;
 
 	void load(ShvNodeItem *nd);
-	void callMethod(unsigned row);
+	void callMethod(unsigned row, bool throw_exc = false);
 
 	QString path() const;
 	QString method(int row) const;

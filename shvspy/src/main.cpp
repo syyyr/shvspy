@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "theapp.h"
-#include "version.h"
+#include "appversion.h"
 #include "appclioptions.h"
 
 #include <shv/chainpack/rpcmessage.h>

@@ -1,5 +1,6 @@
 HEADERS += \
     $$PWD/accessmodel/accessitemdelegate.h \
+    $$PWD/appversion.h \
     $$PWD/dlgaddeditmount.h \
     $$PWD/dlgaddeditrole.h \
     $$PWD/dlgmountseditor.h \
@@ -7,7 +8,6 @@ HEADERS += \
     $$PWD/accessmodel/accessmodel.h \
     $$PWD/dlgselectroles.h \
     $$PWD/rolestreemodel/rolestreemodel.h \
-    $$PWD/version.h \
     $$PWD/mainwindow.h \
     $$PWD/dlgserverproperties.h \
     $$PWD/theapp.h \

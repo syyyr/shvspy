@@ -9,6 +9,7 @@
 #include <shv/core/utils.h>
 #include <shv/core/assert.h>
 #include <shv/coreqt/log.h>
+#include <shv/iotqt/rpc/clientconnection.h>
 #include <shv/iotqt/rpc/rpc.h>
 
 #include <QSettings>
@@ -217,11 +218,11 @@ void AttributesModel::load(ShvNodeItem *nd)
 	loadRows();
 }
 
-void AttributesModel::callMethod(unsigned method_ix)
+void AttributesModel::callMethod(unsigned method_ix, bool throw_exc)
 {
 	if(m_shvTreeNodeItem.isNull())
 		return;
-	unsigned rqid = m_shvTreeNodeItem->callMethod(method_ix);
+	unsigned rqid = m_shvTreeNodeItem->callMethod(method_ix, throw_exc);
 	m_rows[method_ix][ColBtRun] = rqid;
 	emitRowChanged(method_ix);
 }
