@@ -30,7 +30,7 @@ jobs:
 
     - name: Get app version
       run: | 
-        echo "VERSION=`grep APP_VERSION shvspy/src/version.h | cut -d\\" -f2`" >> $GITHUB_ENV
+        echo "VERSION=`grep APP_VERSION shvspy/src/appversion.h | cut -d\\" -f2`" >> $GITHUB_ENV
 
     - name: Get AppImageTool
       run: |
@@ -112,7 +112,7 @@ jobs:
         done
 
     - name: Get app version
-      run: echo "VERSION=`grep APP_VERSION shvspy/src/version.h | cut -d\\" -f2`" >> $GITHUB_ENV
+      run: echo "VERSION=`grep APP_VERSION shvspy/src/appversion.h | cut -d\\" -f2`" >> $GITHUB_ENV
 
     - name: Create installer
       run: |
