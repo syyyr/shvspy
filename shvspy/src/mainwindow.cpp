@@ -31,6 +31,7 @@
 #include <QItemSelectionModel>
 #include <QInputDialog>
 #include <QScrollBar>
+#include <QFileDialog>
 
 #include <fstream>
 
@@ -403,9 +404,42 @@ void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 	}
 	else if (index.isValid() && index.column() == AttributesModel::ColResult) {
 		QMenu menu(this);
-		menu.addAction(tr("View result"));
-		if (menu.exec(ui->tblAttributes->viewport()->mapToGlobal(point))) {
+		auto *a_view_result = menu.addAction(tr("View result"));
+		auto *a_save_result_binary = menu.addAction(tr("Save binary result"));
+		auto *a_save_result_chainpack = menu.addAction(tr("Save result as ChainPack"));
+		auto *a_save_result_cpon = menu.addAction(tr("Save result as Cpon"));
+		auto *a = menu.exec(ui->tblAttributes->viewport()->mapToGlobal(point));
+		if (a == a_view_result) {
 			displayResult(index);
+			return;
+		}
+		auto save_file = [this](const QString &ext, const std::string &data) {
+			static QString recent_dir;
+			QString fn = QFileDialog::getSaveFileName(this, tr("Save File"), recent_dir, ext);
+			if(!fn.isEmpty()) {
+				std::ofstream os(fn.toStdString());
+				if(os) {
+					os << data;
+				}
+			}
+		};
+		if (a == a_save_result_binary) {
+			QVariant v = index.data(AttributesModel::RpcValueRole);
+			const std::string &s = qvariant_cast<cp::RpcValue>(v).asString();
+			save_file(QString(), s);
+			return;
+		}
+		if (a == a_save_result_chainpack) {
+			QVariant v = index.data(AttributesModel::RpcValueRole);
+			std::string s = qvariant_cast<cp::RpcValue>(v).toChainPack();
+			save_file(tr("ChainPack files (*.chpk)"), s);
+			return;
+		}
+		if (a == a_save_result_cpon) {
+			QVariant v = index.data(AttributesModel::RpcValueRole);
+			std::string s = qvariant_cast<cp::RpcValue>(v).toCpon();
+			save_file(tr("Cpon files (*.cpon)"), s);
+			return;
 		}
 	}
 	else if (index.isValid() && index.column() == AttributesModel::ColParams) {
