@@ -78,7 +78,7 @@ void DlgAddEditMount::checkExistingMountId(std::function<void(bool, bool)> callb
 				std::string mount_id = ui->leDeviceId->text().toStdString();
 				const shv::chainpack::RpcValue::List &res = response.result().toList();
 				for (const shv::chainpack::RpcValue &item : res) {
-					if (item.toString() == mount_id) {
+					if (item.asString() == mount_id) {
 						callback(true, true);
 						return;
 					}

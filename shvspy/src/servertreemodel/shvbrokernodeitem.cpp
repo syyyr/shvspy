@@ -341,7 +341,7 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 		try {
 			//shvInfo() << "RPC request received:" << rq.toCpon();
 			cp::RpcValue shv_path = rq.shvPath();
-			if(!shv_path.toString().empty())
+			if(!shv_path.asString().empty())
 				SHV_EXCEPTION("Invalid path: " + shv_path.toString());
 			const cp::RpcValue method = rq.method();
 			if(method == cp::Rpc::METH_DIR) {
@@ -355,7 +355,7 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 			//else if(method.toString() == cp::Rpc::METH_PING) {
 			//	resp.setResult(true);
 			//}
-			else if(method.toString() == cp::Rpc::METH_APP_NAME) {
+			else if(method.asString() == cp::Rpc::METH_APP_NAME) {
 				resp.setResult(QCoreApplication::instance()->applicationName().toStdString());
 			}
 			//else if(method.toString() == cp::Rpc::METH_CONNECTION_TYPE) {
@@ -370,7 +370,7 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 	else if(msg.isSignal()) {
 		shvDebug() << msg.toCpon();
 		if(serverProperties().value(QStringLiteral("muteHeartBeats")).toBool()) {
-			if(msg.method().toString() == "appserver.heartBeat")
+			if(msg.method().asString() == "appserver.heartBeat")
 				return;
 		}
 		RpcNotificationsModel *m = TheApp::instance()->rpcNotificationsModel();

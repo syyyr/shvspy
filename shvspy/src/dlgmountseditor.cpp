@@ -202,7 +202,7 @@ void DlgMountsEditor::listMounts()
 				const shv::chainpack::RpcValue::List &res = response.result().toList();
 
 				for (size_t i = 0; i < res.size(); i++){
-					QString id = QString::fromStdString(res.at(i).toString());
+					QString id = QString::fromStdString(res.at(i).asString());
 					m_mountPoints[id].id = id;
 					getMountPointDefinition(id);
 				}
@@ -228,8 +228,8 @@ void DlgMountsEditor::getMountPointDefinition(const QString &id)
 		if (response.isSuccess()) {
 			m_mountPoints[id].status = Ok;
 			if (response.result().isMap()){
-				m_mountPoints[id].mountPoint = QString::fromStdString(response.result().at("mountPoint").toString());
-				m_mountPoints[id].description = QString::fromStdString(response.result().at("description").toString());
+				m_mountPoints[id].mountPoint = QString::fromStdString(response.result().at("mountPoint").asString());
+				m_mountPoints[id].description = QString::fromStdString(response.result().at("description").asString());
 			}
 		}
 		else {

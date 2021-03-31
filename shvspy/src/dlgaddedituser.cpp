@@ -127,7 +127,7 @@ void DlgAddEditUser::checkExistingUser(std::function<void(bool, bool)> callback)
 				std::string user_name = user();
 				const shv::chainpack::RpcValue::List &res = response.result().toList();
 				for (const shv::chainpack::RpcValue &item : res) {
-					if (item.toString() == user_name) {
+					if (item.asString() == user_name) {
 						callback(true, true);
 						return;
 					}
@@ -322,7 +322,7 @@ void DlgAddEditUser::setRoles(const shv::chainpack::RpcValue::List &roles)
 
 	for (shv::chainpack::RpcValue role : roles){
 		if (role.isString()){
-			roles_list.append(QString::fromStdString(role.toString()));
+			roles_list.append(QString::fromStdString(role.asString()));
 		}
 	}
 

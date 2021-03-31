@@ -335,7 +335,7 @@ void MethodParametersDialog::switchToString(QTableWidget *table, int row, int co
 		return  cp::RpcValue(line_edit->text().toStdString());
 	};
 	setters[row] = [line_edit](const cp::RpcValue &param) {
-		line_edit->setText(QString::fromStdString(param.toString()));
+		line_edit->setText(QString::fromStdString(param.asString()));
 	};
 }
 
@@ -675,7 +675,7 @@ cp::RpcValue MethodParametersDialog::singleParamValue() const
 	}
 
 	cp::RpcValue val = m_singleValueGetters[0]();
-	if (val.isString() && val.toString().size() == 0) {
+	if (val.isString() && val.asString().size() == 0) {
 		return cp::RpcValue();
 	}
 	return val;

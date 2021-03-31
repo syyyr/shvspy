@@ -308,13 +308,14 @@ void MainWindow::displayResult(const QModelIndex &ix)
 	//QApplication::setOverrideCursor(Qt::WaitCursor);
 	QVariant v = ix.data(AttributesModel::RpcValueRole);
 	cp::RpcValue rv = qvariant_cast<cp::RpcValue>(v);
-	if(rv.isString()) {
+	if(rv.isString() || rv.isBlob()) {
 		TextEditDialog *view = new TextEditDialog(this);
 		view->setModal(false);
 		view->setAttribute(Qt::WA_DeleteOnClose);
 		view->setWindowIconText(tr("Result"));
 		view->setReadOnly(true);
-		view->setText(QString::fromStdString(rv.toString()));
+		std::pair<const char *, size_t> data = rv.asData();
+		view->setText(QString::fromUtf8(std::get<0>(data), std::get<1>(data)));
 		view->show();
 	}
 	else {
@@ -355,7 +356,7 @@ void MainWindow::editStringParameter(const QModelIndex &ix)
 {
 	QVariant v = ix.data(AttributesModel::RpcValueRole);
 	cp::RpcValue rv = qvariant_cast<cp::RpcValue>(v);
-	QString cpon = QString::fromStdString(rv.toString());
+	QString cpon = QString::fromStdString(rv.asString());
 	TextEditDialog dlg(this);
 	dlg.setWindowTitle(tr("Parameters"));
 	dlg.setReadOnly(false);
