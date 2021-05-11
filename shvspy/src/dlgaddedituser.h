@@ -8,7 +8,7 @@
 #include <shv/iotqt/rpc/rpcresponsecallback.h>
 #include <shv/iotqt/rpc/clientconnection.h>
 
-#include <shv/broker/acluser.h>
+#include <shv/iotqt/acl/acluser.h>
 
 namespace Ui {
 class DlgAddEditUser;
@@ -52,7 +52,7 @@ private:
 	DialogType m_dialogType;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	std::string m_aclEtcNodePath;
-	shv::broker::AclUser m_user;
+	shv::iotqt::acl::AclUser m_user;
 };
 
 #endif // DLGEDITUSER_H

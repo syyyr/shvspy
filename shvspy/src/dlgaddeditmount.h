@@ -6,7 +6,7 @@
 #include "shv/chainpack/rpcvalue.h"
 #include <shv/iotqt/rpc/rpcresponsecallback.h>
 #include <shv/iotqt/rpc/clientconnection.h>
-#include <shv/broker/aclmountdef.h>
+#include <shv/iotqt/acl/aclmountdef.h>
 
 #include <QDialog>
 #include <QTableView>
@@ -43,7 +43,7 @@ private:
 	DialogType m_dialogType;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	std::string m_aclEtcNodePath;
-	shv::broker::AclMountDef m_mount;
+	shv::iotqt::acl::AclMountDef m_mount;
 };
 
 #endif // DLGADDEDITMOUNT_H

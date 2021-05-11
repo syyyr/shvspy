@@ -1,6 +1,6 @@
 #pragma once
 
-#include <shv/broker/aclrolepaths.h>
+#include <shv/iotqt/acl/aclroleaccessrules.h>
 #include <shv/chainpack/rpcvalue.h>
 
 #include <QAbstractTableModel>
@@ -32,6 +32,6 @@ public:
 	bool isRulesValid();
 
 private:
-	shv::broker::AclRoleAccessRules m_rules;
+	shv::iotqt::acl::AclRoleAccessRules m_rules;
 	bool m_legacyRulesFormat = false;
 };

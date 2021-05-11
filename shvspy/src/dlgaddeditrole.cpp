@@ -148,7 +148,7 @@ void DlgAddEditRole::callSetRoleSettings()
 	m_role.weight = weight();
 	m_role.profile = profile();
 
-	shv::chainpack::RpcValue::List params{roleName().toStdString(), m_role.toRpcValueMap()};
+	shv::chainpack::RpcValue::List params{roleName().toStdString(), m_role.toRpcValue()};
 	m_rpcConnection->callShvMethod(rqid, aclEtcRoleNodePath(), SET_VALUE_METHOD, params);
 }
 
@@ -167,7 +167,7 @@ void DlgAddEditRole::callGetRoleSettings()
 				setStatusText(tr("Failed to call method ls.") + QString::fromStdString(response.error().toString()));
 			}
 			else{
-				m_role = shv::broker::AclRole::fromRpcValue(response.result());
+				m_role = shv::iotqt::acl::AclRole::fromRpcValue(response.result());
 				setRoles(m_role.roles);
 				setWeight(m_role.weight);
 				setProfile(m_role.profile);
