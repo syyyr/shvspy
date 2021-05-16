@@ -7,7 +7,7 @@
 #include <shv/chainpack/rpcvalue.h>
 #include <shv/iotqt/rpc/rpcresponsecallback.h>
 #include <shv/iotqt/rpc/clientconnection.h>
-#include <shv/broker/aclrole.h>
+#include <shv/iotqt/acl/aclrole.h>
 
 #include <QDialog>
 #include <QTableView>
@@ -64,7 +64,7 @@ private:
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	std::string m_aclEtcNodePath;
 	AccessModel m_accessModel;
-	shv::broker::AclRole m_role;
+	shv::iotqt::acl::AclRole m_role;
 };
 
 #endif // DLGADDEDITROLE_H

@@ -129,7 +129,7 @@ void DlgAddEditMount::callSetMountSettings()
 	m_mount.mountPoint = ui->leMountPoint->text().toStdString();
 	m_mount.description = ui->leDescription->text().toStdString();
 
-	shv::chainpack::RpcValue::List params{ui->leDeviceId->text().toStdString(), m_mount.toRpcValueMap()};
+	shv::chainpack::RpcValue::List params{ui->leDeviceId->text().toStdString(), m_mount.toRpcValue()};
 	m_rpcConnection->callShvMethod(rqid, aclEtcMountNodePath(), SET_VALUE_METHOD, params);
 }
 
@@ -148,7 +148,7 @@ void DlgAddEditMount::callGetMountSettings()
 				setStatusText(tr("Failed to call method ls.") + QString::fromStdString(response.error().toString()));
 			}
 			else{
-				m_mount = shv::broker::AclMountDef::fromRpcValue(response.result());
+				m_mount = shv::iotqt::acl::AclMountDef::fromRpcValue(response.result());
 				ui->leMountPoint->setText(QString::fromStdString(m_mount.mountPoint));
 				ui->leDescription->setText(QString::fromStdString(m_mount.description));
 			}

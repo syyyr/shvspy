@@ -4,7 +4,7 @@
 #include "theapp.h"
 #include "dlgselectroles.h"
 
-#include <shv/broker/aclrole.h>
+#include <shv/iotqt/acl/aclrole.h>
 
 
 #include <QCryptographicHash>
@@ -202,9 +202,9 @@ void DlgAddEditUser::callCreateRole(const std::string &role_name, std::function<
 		}
 	});
 
-	shv::broker::AclRole role(0);
+	shv::iotqt::acl::AclRole role(0);
 
-	shv::chainpack::RpcValue::List params{role_name, role.toRpcValueMap()};
+	shv::chainpack::RpcValue::List params{role_name, role.toRpcValue()};
 	m_rpcConnection->callShvMethod(rqid, aclEtcRolesNodePath(), SET_VALUE_METHOD, params);
 }
 
@@ -224,7 +224,7 @@ void DlgAddEditUser::callGetUserSettings()
 				ui->lblStatus->setText(QString::fromStdString(response.error().toString()));
 			}
 			else{
-				m_user = shv::broker::AclUser::fromRpcValue(response.result());
+				m_user = shv::iotqt::acl::AclUser::fromRpcValue(response.result());
 				setRoles(m_user.roles);
 				ui->lblStatus->setText("");
 			}
@@ -264,11 +264,11 @@ void DlgAddEditUser::callSetUserSettings()
 	m_user.roles = roles();
 
 	if (!password().isEmpty()){
-		m_user.password.format = shv::broker::AclPassword::Format::Sha1;
+		m_user.password.format = shv::iotqt::acl::AclPassword::Format::Sha1;
 		m_user.password.password = sha1_hex(password().toStdString());
 	}
 
-	shv::chainpack::RpcValue::List params{user(), m_user.toRpcValueMap()};
+	shv::chainpack::RpcValue::List params{user(), m_user.toRpcValue()};
 	m_rpcConnection->callShvMethod(rqid, aclEtcUsersNodePath(), SET_VALUE_METHOD, params);
 }
 

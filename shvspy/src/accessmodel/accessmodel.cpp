@@ -38,7 +38,7 @@ void AccessModel::setRules(const shv::chainpack::RpcValue &role_rules)
 {
 	beginResetModel();
 	m_legacyRulesFormat = role_rules.isMap();
-	m_rules = shv::broker::AclRoleAccessRules::fromRpcValue(role_rules);
+	m_rules = shv::iotqt::acl::AclRoleAccessRules::fromRpcValue(role_rules);
 	endResetModel();
 }
 
@@ -78,7 +78,7 @@ QVariant AccessModel::data(const QModelIndex &ix, int role) const
 		return QVariant();
 	}
 
-	const shv::broker::AclAccessRule &rule = m_rules.at(ix.row());
+	const shv::iotqt::acl::AclAccessRule &rule = m_rules.at(ix.row());
 
 	if(role == Qt::DisplayRole || role == Qt::EditRole) {
 		switch (ix.column()) {
@@ -101,7 +101,7 @@ bool AccessModel::setData(const QModelIndex &ix, const QVariant &val, int role)
 	}
 
 	if (role == Qt::EditRole){
-		shv::broker::AclAccessRule &rule = m_rules[ix.row()];
+		shv::iotqt::acl::AclAccessRule &rule = m_rules[ix.row()];
 		if (ix.column() == Columns::ColPath) {
 			rule.pathPattern = val.toString().toStdString();
 			return true;
@@ -143,7 +143,7 @@ QVariant AccessModel::headerData(int section, Qt::Orientation orientation, int r
 void AccessModel::addRule()
 {
 	beginInsertRows(QModelIndex(), rowCount(), rowCount());
-	m_rules.push_back(shv::broker::AclAccessRule());
+	m_rules.push_back(shv::iotqt::acl::AclAccessRule());
 	endInsertRows();
 }
 

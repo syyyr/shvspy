@@ -3,7 +3,7 @@
 #include <shv/iotqt/rpc/rpcresponsecallback.h>
 #include <shv/core/log.h>
 
-#include <shv/broker/aclrole.h>
+#include <shv/iotqt/acl/aclrole.h>
 
 static const std::string VALUE_METHOD = "value";
 
@@ -87,7 +87,7 @@ void RolesTreeModel::loadRoles(shv::iotqt::rpc::ClientConnection *rpc_connection
 			}
 			else{
 				if (response.result().isMap()){
-					shv::broker::AclRole r = shv::broker::AclRole::fromRpcValue(response.result());
+					shv::iotqt::acl::AclRole r = shv::iotqt::acl::AclRole::fromRpcValue(response.result());
 					m_shvRoles[QString::fromStdString(role_name)] = r.roles;
 				}
 
