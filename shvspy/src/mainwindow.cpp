@@ -418,27 +418,27 @@ void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 			static QString recent_dir;
 			QString fn = QFileDialog::getSaveFileName(this, tr("Save File"), recent_dir, ext);
 			if(!fn.isEmpty()) {
-				std::ofstream os(fn.toStdString());
-				if(os) {
-					os << data;
+				std::ofstream os(fn.toStdString(), std::ios::binary);
+				if (os) {
+					os.write(data.data(), data.size());
 				}
 			}
 		};
 		if (a == a_save_result_binary) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string &s = qvariant_cast<cp::RpcValue>(v).asString();
+			const std::string &s = qvariant_cast<cp::RpcValue>(v).toString();
 			save_file(QString(), s);
 			return;
 		}
 		if (a == a_save_result_chainpack) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			std::string s = qvariant_cast<cp::RpcValue>(v).toChainPack();
+			const std::string s = qvariant_cast<cp::RpcValue>(v).toChainPack();
 			save_file(tr("ChainPack files (*.chpk)"), s);
 			return;
 		}
 		if (a == a_save_result_cpon) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			std::string s = qvariant_cast<cp::RpcValue>(v).toCpon();
+			const std::string s = qvariant_cast<cp::RpcValue>(v).toCpon();
 			save_file(tr("Cpon files (*.cpon)"), s);
 			return;
 		}
