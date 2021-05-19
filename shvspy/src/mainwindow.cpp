@@ -384,6 +384,15 @@ void MainWindow::editCponParameters(const QModelIndex &ix)
 	}
 }
 
+static QString content_type_to_files_filter(const std::string &content_type)
+{
+	static QMap<std::string, QString> files_filter_map = {
+		{ "application/gzip", "GZip compressed files (*.gz)" },
+	};
+
+	return files_filter_map.value(content_type);
+}
+
 void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 {
 	QModelIndex index = ui->tblAttributes->indexAt(point);
@@ -426,8 +435,10 @@ void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 		};
 		if (a == a_save_result_binary) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string &s = qvariant_cast<cp::RpcValue>(v).toString();
-			save_file(QString(), s);
+			const cp::RpcValue rpc_val = qvariant_cast<cp::RpcValue>(v);
+			const std::string &s = rpc_val.toString();
+			const std::string content_type = rpc_val.metaValue("contentType").toStdString();
+			save_file(content_type_to_files_filter(content_type), s);
 			return;
 		}
 		if (a == a_save_result_chainpack) {
