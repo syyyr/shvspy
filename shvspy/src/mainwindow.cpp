@@ -436,14 +436,18 @@ void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 		}
 		if (a == a_save_result_chainpack) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string s = qvariant_cast<cp::RpcValue>(v).toChainPack();
-			save_file(tr("ChainPack files (*.chpk)"), s);
+			const cp::RpcValue rpc_val = qvariant_cast<cp::RpcValue>(v);
+			const std::string s = rpc_val.toChainPack();
+			const std::string file_name = rpc_val.metaValue("fileName").toStdString();
+			save_file(tr("ChainPack files (*.chpk)"), s, file_name + ".chpk");
 			return;
 		}
 		if (a == a_save_result_cpon) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string s = qvariant_cast<cp::RpcValue>(v).toCpon();
-			save_file(tr("Cpon files (*.cpon)"), s);
+			const cp::RpcValue rpc_val = qvariant_cast<cp::RpcValue>(v);
+			const std::string s = rpc_val.toCpon();
+			const std::string file_name = rpc_val.metaValue("fileName").toStdString();
+			save_file(tr("Cpon files (*.cpon)"), s, file_name + ".cpon");
 			return;
 		}
 	}
