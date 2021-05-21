@@ -414,10 +414,12 @@ void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 			displayResult(index);
 			return;
 		}
-		auto save_file = [this](const QString &ext, const std::string &data) {
+		auto save_file = [this](const QString &ext, const std::string &data, const std::string &file_name = {}) {
 			static QString recent_dir;
-			QString fn = QFileDialog::getSaveFileName(this, tr("Save File"), recent_dir, ext);
+			const QString full_path = recent_dir + '/' + QString::fromStdString(file_name);
+			QString fn = QFileDialog::getSaveFileName(this, tr("Save File"), full_path, ext);
 			if(!fn.isEmpty()) {
+				recent_dir = QFileInfo(fn).absolutePath();
 				std::ofstream os(fn.toStdString(), std::ios::binary);
 				if (os) {
 					os.write(data.data(), data.size());
@@ -426,20 +428,26 @@ void MainWindow::onAttributesTableContexMenu(const QPoint &point)
 		};
 		if (a == a_save_result_binary) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string &s = qvariant_cast<cp::RpcValue>(v).toString();
-			save_file(QString(), s);
+			const cp::RpcValue rpc_val = qvariant_cast<cp::RpcValue>(v);
+			const std::string &s = rpc_val.toString();
+			const std::string file_name = rpc_val.metaValue("fileName").toStdString();
+			save_file(QString(), s, file_name);
 			return;
 		}
 		if (a == a_save_result_chainpack) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string s = qvariant_cast<cp::RpcValue>(v).toChainPack();
-			save_file(tr("ChainPack files (*.chpk)"), s);
+			const cp::RpcValue rpc_val = qvariant_cast<cp::RpcValue>(v);
+			const std::string s = rpc_val.toChainPack();
+			const std::string file_name = rpc_val.metaValue("fileName").toStdString();
+			save_file(tr("ChainPack files (*.chpk)"), s, file_name + ".chpk");
 			return;
 		}
 		if (a == a_save_result_cpon) {
 			QVariant v = index.data(AttributesModel::RpcValueRole);
-			const std::string s = qvariant_cast<cp::RpcValue>(v).toCpon();
-			save_file(tr("Cpon files (*.cpon)"), s);
+			const cp::RpcValue rpc_val = qvariant_cast<cp::RpcValue>(v);
+			const std::string s = rpc_val.toCpon();
+			const std::string file_name = rpc_val.metaValue("fileName").toStdString();
+			save_file(tr("Cpon files (*.cpon)"), s, file_name + ".cpon");
 			return;
 		}
 	}
