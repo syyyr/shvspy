@@ -42,7 +42,7 @@ protected:
 	void editStringParameter(const QModelIndex &ix);
 	void editCponParameters(const QModelIndex &ix);
 
-	void onAttributesTableContexMenu(const QPoint &point);
+	void onAttributesTableContextMenu(const QPoint &point);
 
 	void closeEvent(QCloseEvent *ev) Q_DECL_OVERRIDE;
 	void saveSettings();

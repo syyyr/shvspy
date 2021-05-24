@@ -98,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		Q_UNUSED(method_ix)
 		this->resizeAttributesViewSectionsToFit();
 	});
-	connect(ui->tblAttributes, &QTableView::customContextMenuRequested, this, &MainWindow::onAttributesTableContexMenu);
+	connect(ui->tblAttributes, &QTableView::customContextMenuRequested, this, &MainWindow::onAttributesTableContextMenu);
 
 	connect(ui->tblAttributes, &QTableView::activated, [this](const QModelIndex &ix) {
 		if(ix.column() == AttributesModel::ColBtRun) {
@@ -384,7 +384,7 @@ void MainWindow::editCponParameters(const QModelIndex &ix)
 	}
 }
 
-void MainWindow::onAttributesTableContexMenu(const QPoint &point)
+void MainWindow::onAttributesTableContextMenu(const QPoint &point)
 {
 	QModelIndex index = ui->tblAttributes->indexAt(point);
 	if (index.isValid() && index.column() == AttributesModel::ColMethodName) {
