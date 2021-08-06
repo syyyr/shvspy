@@ -22,10 +22,10 @@ QWidget *AccessItemDelegate::createEditor(QWidget *parent, const QStyleOptionVie
 void AccessItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
 	QLineEdit *e = qobject_cast<QLineEdit*>(editor);
-	if (index.isValid() && e){
+	if (index.isValid() && e) {
 		std::string val = e->text().trimmed().toStdString();
 
-		if (index.column() == AccessModel::Columns::ColGrant){
+		if (index.column() == AccessModel::Columns::ColGrant) {
 			std::string err;
 			shv::chainpack::RpcValue rv = shv::chainpack::RpcValue::fromCpon(val, &err);
 
@@ -37,7 +37,7 @@ void AccessItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 				QMessageBox::critical(editor, tr("Invalid data"), msg);
 			}
 		}
-		else if (index.column() == AccessModel::Columns::ColPath){
+		else if (index.column() == AccessModel::Columns::ColPath) {
 			if (!val.empty()){
 				model->setData(index, qobject_cast<QLineEdit*>(editor)->text(), Qt::EditRole);
 			}
@@ -46,12 +46,14 @@ void AccessItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 				QMessageBox::critical(editor, tr("Invalid data"), msg);
 			}
 		}
-		else if (index.column() == AccessModel::Columns::ColMethod){
-			model->setData(index, qobject_cast<QLineEdit*>(editor)->text(), Qt::EditRole);
-		}
-		else
+		//else if (index.column() == AccessModel::Columns::ColMethod) {
+		//	model->setData(index, qobject_cast<QLineEdit*>(editor)->text(), Qt::EditRole);
+		//}
+		else {
 			Super::setModelData(editor, model, index);
+		}
 	}
-	else
+	else {
 		Super::setModelData(editor, model, index);
+	}
 }

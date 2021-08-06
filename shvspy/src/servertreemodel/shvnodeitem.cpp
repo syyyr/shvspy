@@ -117,6 +117,10 @@ QVariant ShvNodeItem::data(int role) const
 	if(role == Qt::DisplayRole) {
 		ret = objectName();
 	}
+	else if(role == Qt::BackgroundRole) {
+		if(objectName() == QStringLiteral(".local"))
+			return QColor(QStringLiteral("yellowgreen"));
+	}
 	else if(role == Qt::DecorationRole) {
 		if(isChildrenLoading()) {
 			static QIcon ico_reload = QIcon(QStringLiteral(":/shvspy/images/reload"));

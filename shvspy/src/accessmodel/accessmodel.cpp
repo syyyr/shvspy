@@ -14,6 +14,8 @@ using namespace std;
 QString AccessModel::columnName(int col)
 {
 	switch (col){
+	case Columns::ColService:
+		return tr("Service");
 	case Columns::ColPath:
 		return tr("Path");
 	case Columns::ColMethod:
@@ -82,6 +84,8 @@ QVariant AccessModel::data(const QModelIndex &ix, int role) const
 
 	if(role == Qt::DisplayRole || role == Qt::EditRole) {
 		switch (ix.column()) {
+		case Columns::ColService:
+			return QString::fromStdString(rule.service);
 		case Columns::ColPath:
 			return QString::fromStdString(rule.pathPattern);
 		case Columns::ColMethod:
@@ -90,31 +94,51 @@ QVariant AccessModel::data(const QModelIndex &ix, int role) const
 			return QString::fromStdString(rule.grant.toRpcValue().toCpon());
 		}
 	}
+	else if(role == Qt::ToolTipRole) {
+		switch (ix.column()) {
+		case Columns::ColService:
+			if(rule.service.empty())
+				return tr("Rule cannot be applied to service call.");
+			if(rule.service == shv::iotqt::acl::AclAccessRule::ALL_SERVICES)
+				return tr("Rule will be applied to any service call.");
+			return tr("Rule will be applied to service '%1' down-tree call.").arg(rule.service.c_str());
+		case Columns::ColPath:
+			return tr("'path/to/node' or 'path/to/subtree/**' can be used here");
+		case Columns::ColMethod:
+			return tr("Rule is applied to this method only or to any method if blank.");
+		}
+	}
 
 	return QVariant();
 }
 
 bool AccessModel::setData(const QModelIndex &ix, const QVariant &val, int role)
 {
-	if (m_rules.empty() || ix.row() >= (int)m_rules.size() || ix.row() < 0){
+	if (m_rules.empty() || ix.row() >= (int)m_rules.size() || ix.row() < 0)
 		return false;
-	}
 
 	if (role == Qt::EditRole){
 		shv::iotqt::acl::AclAccessRule &rule = m_rules[ix.row()];
+		if (ix.column() == Columns::ColService) {
+			rule.service = val.toString().toStdString();
+			return true;
+		}
 		if (ix.column() == Columns::ColPath) {
 			rule.pathPattern = val.toString().toStdString();
 			return true;
 		}
-		else if (ix.column() == Columns::ColMethod) {
+		if (ix.column() == Columns::ColMethod) {
 			rule.method = val.toString().toStdString();
 			return true;
 		}
-		else if (ix.column() == Columns::ColGrant) {
+		if (ix.column() == Columns::ColGrant) {
 			std::string cpon = val.toString().toStdString();
 			std::string err;
 			shv::chainpack::RpcValue rv = cp::RpcValue::fromCpon(cpon, &err);
-
+			if(!err.empty()) {
+				cpon = '"' + cpon + '"';
+				rv = cp::RpcValue::fromCpon(cpon, &err);
+			}
 			if(err.empty()) {
 				rule.grant = shv::chainpack::AccessGrant::fromRpcValue(rv);
 				return true;
