@@ -28,12 +28,14 @@ void AccessItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 		if (index.column() == AccessModel::Columns::ColGrant) {
 			std::string err;
 			shv::chainpack::RpcValue rv = shv::chainpack::RpcValue::fromCpon(val, &err);
-
-			if (err.empty()){
+			if (!err.empty()) {
+				rv = shv::chainpack::RpcValue::fromCpon('"' + val + '"', &err);
+			}
+			if (err.empty()) {
 				model->setData(index, qobject_cast<QLineEdit*>(editor)->text(), Qt::EditRole);
 			}
 			else{
-				QString msg =tr("In column") + " " + AccessModel::columnName(index.column()) + " " + tr("is not valid chainpack.") + " " + tr("For exmaple \"cmd\"");
+				QString msg =tr("In column") + " " + AccessModel::columnName(index.column()) + " " + tr("is not valid chainpack.") + " " + tr("For example \"cmd\"");
 				QMessageBox::critical(editor, tr("Invalid data"), msg);
 			}
 		}
