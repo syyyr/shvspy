@@ -250,7 +250,7 @@ void ShvBrokerNodeItem::onBrokerConnectedChanged(bool is_connected)
 	emit brokerConnectedChange(is_connected);
 }
 
-ShvNodeItem* ShvBrokerNodeItem::findNode(const std::string &path_, std::string *path_rest)
+ShvNodeItem* ShvBrokerNodeItem::findNode(const std::string &path_)
 {
 	shvLogFuncFrame() << path_ << "shv root:" << shvRoot();
 	ShvNodeItem *ret = this;
@@ -261,22 +261,17 @@ ShvNodeItem* ShvBrokerNodeItem::findNode(const std::string &path_, std::string *
 			path = path.substr(1);
 	}
 	shv::core::StringViewList id_list = shv::core::utils::ShvPath::split(path);
-
 	for(const shv::core::StringView &node_id : id_list) {
 		int i;
 		int row_cnt = ret->childCount();
 		for (i = 0; i < row_cnt; ++i) {
 			ShvNodeItem *nd = ret->childAt(i);
-			if(nd) {
-				if(node_id == nd->nodeId()) {
-					ret = nd;
-					break;
-				}
+			if(nd && node_id == nd->nodeId()) {
+				ret = nd;
+				break;
 			}
 		}
 		if(i == row_cnt) {
-			if(path_rest)
-				*path_rest = path.substr(node_id.start());
 			return nullptr;
 		}
 	}

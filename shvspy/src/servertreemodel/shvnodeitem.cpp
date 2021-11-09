@@ -1,11 +1,12 @@
 #include "shvnodeitem.h"
 #include "shvbrokernodeitem.h"
 #include "servertreemodel.h"
+#include "../theapp.h"
 
 #include <shv/iotqt/rpc/clientconnection.h>
 #include <shv/chainpack/cponreader.h>
 #include <shv/chainpack/cponwriter.h>
-#include <src/theapp.h>
+#include <shv/core/utils/shvpath.h>
 
 #include <shv/core/assert.h>
 
@@ -187,29 +188,20 @@ void ShvNodeItem::deleteChildren()
 
 std::string ShvNodeItem::shvPath() const
 {
-	std::string ret;
+	std::vector<std::string> lst;
 	ShvBrokerNodeItem *srv_nd = serverNode();
 	const ShvNodeItem *nd = this;
 	while(nd) {
-		if(!nd) {
+		if(!nd || nd == srv_nd)
 			break;
-		}
-		else if(nd == srv_nd) {
-			if(!srv_nd->shvRoot().empty()) {
-				if(!ret.empty())
-					ret = '/' + ret;
-				ret = srv_nd->shvRoot() + ret;
-			}
-			break;
-		}
-		else {
-			if(!ret.empty())
-				ret = '/' + ret;
-			ret = nd->nodeId() + ret;
-		}
+		else
+			lst.push_back(nd->nodeId());
 		nd = nd->parentNode();
 	}
-	return ret;
+	std::reverse(lst.begin(), lst.end());
+	std::string path = shv::core::utils::ShvPath::join(lst);
+	path = shv::core::utils::ShvPath::join(srv_nd->shvRoot(), path);
+	return path;
 }
 
 void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
