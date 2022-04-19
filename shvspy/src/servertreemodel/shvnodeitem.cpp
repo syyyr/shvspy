@@ -199,8 +199,8 @@ std::string ShvNodeItem::shvPath() const
 		nd = nd->parentNode();
 	}
 	std::reverse(lst.begin(), lst.end());
-	std::string path = shv::core::utils::ShvPath::join(lst);
-	path = shv::core::utils::ShvPath::joinPath(srv_nd->shvRoot(), path);
+	std::string path = shv::core::utils::ShvPath::joinDirs(lst);
+	path = shv::core::Utils::joinPath(srv_nd->shvRoot(), path);
 	return path;
 }
 

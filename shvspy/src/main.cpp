@@ -11,6 +11,7 @@
 #include <QTextStream>
 #include <QTranslator>
 #include <QDateTime>
+#include <QSettings>
 
 #include <iostream>
 
@@ -46,10 +47,6 @@ int main(int argc, char *argv[])
 		shvWarning() << "Undefined argument:" << s;
 	}
 
-	if(!cli_opts.loadConfigFile()) {
-		return EXIT_FAILURE;
-	}
-
 	shv::chainpack::RpcMessage::registerMetaTypes();
 
 	shvInfo() << "======================================================================================";
@@ -63,6 +60,19 @@ int main(int argc, char *argv[])
 	shvInfo() << QDateTime::currentDateTime().toString(Qt::ISODate).toStdString() << "UTC:" << QDateTime::currentDateTimeUtc().toString(Qt::ISODate).toStdString();
 	shvInfo() << "======================================================================================";
 	shvInfo() << "Log tresholds:" << NecroLog::tresholdsLogInfo();
+#ifdef FORCE_CONFIG_IN_RESOURCES
+	auto config_dir = QStringLiteral(":/shvspy/config");
+	QSettings::setDefaultFormat(QSettings::IniFormat);
+	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, config_dir);
+	shvInfo() << "Config dir:" << config_dir;
+#else
+	if(cli_opts.configDir_isset()) {
+		auto config_dir = QString::fromStdString(cli_opts.configDir());
+		QSettings::setDefaultFormat(QSettings::IniFormat);
+		QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, config_dir);
+		shvInfo() << "Config dir:" << config_dir;
+	}
+#endif
 	shvInfo() << "--------------------------------------------------------------------------------------";
 
 	TheApp a(argc, argv, &cli_opts);

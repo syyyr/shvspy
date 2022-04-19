@@ -39,6 +39,13 @@ unix {
 		-Wl,-rpath,\'\$\$ORIGIN/../lib\'
 }
 
+force-config-in-resources {
+	DEFINES += FORCE_CONFIG_IN_RESOURCES
+
+	RESOURCES += \
+		config/config.qrc \
+}
+
 PROJECT_TOP_SRCDIR = $$PWD/../../..
 #QUICKBOX_HOME = $$PROJECT_TOP_SRCDIR/3rdparty/quickbox
 
@@ -53,7 +60,7 @@ INCLUDEPATH += \
     $$LIBSHV_SRC_DIR/libshvvisu/include \
 
 RESOURCES += \
-	$${TARGET}.qrc \
+	shvspy.qrc \
 
 include (src/src.pri)
 
