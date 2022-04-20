@@ -1,5 +1,4 @@
-#ifndef DLGROLESSEDITOR_H
-#define DLGROLESEDITOR_H
+#pragma once
 
 #include <QDialog>
 
@@ -47,4 +46,3 @@ private:
 	QSortFilterProxyModel *m_modelProxy;
 };
 
-#endif // DLGROLESEDITOR_H

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
 
 namespace Ui {
 class MainWindow;
@@ -47,8 +48,12 @@ protected:
 	void closeEvent(QCloseEvent *ev) Q_DECL_OVERRIDE;
 	void saveSettings();
 private:
+	void checkSettingsReady();
+
+private:
 	Ui::MainWindow *ui;
 	QStandardItemModel *m_opcObjects;
+	QSettings m_settings;
 };
 
 #endif // MAINWINDOW_H

@@ -11,7 +11,7 @@ isEmpty(LIBSHV_SRC_DIR) {
     LIBSHV_SRC_DIR=$$SHV_PROJECT_TOP_SRCDIR/3rdparty/libshv
 }
 
-QT += core gui widgets
+QT += core gui widgets network websockets
 CONFIG += c++11
 
 TEMPLATE = app
@@ -21,25 +21,38 @@ DESTDIR = $$SHV_PROJECT_TOP_BUILDDIR/bin
 LIBDIR = $$DESTDIR
 unix: LIBDIR = $$SHV_PROJECT_TOP_BUILDDIR/lib
 
-LIBS += \
-	-L$$LIBDIR \
-	-lnecrolog \
-	-lshvchainpack \
-	-lshvcore \
-	-lshvcoreqt \
-	-lshviotqt \
-	-lshvvisu \
-
-
-unix {
+wasm {
+	message ( WASM build )
+	CONFIG += force-config-in-resources
 	LIBS += \
-# 		-lmbedx509 \
-# 		-lmbedtls \
-# 		-lmbedcrypto \
-		-Wl,-rpath,\'\$\$ORIGIN/../lib\'
+		$$LIBDIR/libnecrolog.a \
+		$$LIBDIR/libshvchainpack.a \
+		$$LIBDIR/libshvcore.a \
+		$$LIBDIR/libshvcoreqt.a \
+		$$LIBDIR/libshviotqt.a \
+		$$LIBDIR/libshvvisu.a \
+}
+else {
+	LIBS += \
+		-L$$LIBDIR \
+		-lnecrolog \
+		-lshvchainpack \
+		-lshvcore \
+		-lshvcoreqt \
+		-lshviotqt \
+		-lshvvisu \
+
+	unix {
+		LIBS += \
+	# 		-lmbedx509 \
+	# 		-lmbedtls \
+	# 		-lmbedcrypto \
+			-Wl,-rpath,\'\$\$ORIGIN/../lib\'
+	}
 }
 
 force-config-in-resources {
+	message ( "FORCE_CONFIG_IN_RESOURCES defined" )
 	DEFINES += FORCE_CONFIG_IN_RESOURCES
 
 	RESOURCES += \

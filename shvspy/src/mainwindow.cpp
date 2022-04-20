@@ -123,15 +123,30 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->notificationsLogWidget->setLogTableModel(TheApp::instance()->rpcNotificationsModel());
 	ui->errorLogWidget->setLogTableModel(TheApp::instance()->errorLogModel());
 
-	QSettings settings;
-	restoreGeometry(settings.value(QStringLiteral("ui/mainWindow/geometry")).toByteArray());
-	restoreState(settings.value(QStringLiteral("ui/mainWindow/state")).toByteArray());
-	TheApp::instance()->loadSettings(settings);
+	checkSettingsReady();
 }
 
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+void MainWindow::checkSettingsReady()
+{
+#ifdef Q_OS_WASM
+	// WASM settings will be ready at some later point in time - when
+	// QSettings::status() returns NoError.
+	// see https://github.com/msorvig/qt-webassembly-examples/tree/master/gui_settings
+	shvInfo() << "Waiting for settings initialized";
+	if (m_settings.status() != QSettings::NoError) {
+		QTimer::singleShot(2000, this, &MainWindow::checkSettingsReady);
+		return;
+	}
+	shvInfo() << "Settings initialized OK";
+#endif
+	restoreGeometry(m_settings.value(QStringLiteral("ui/mainWindow/geometry")).toByteArray());
+	restoreState(m_settings.value(QStringLiteral("ui/mainWindow/state")).toByteArray());
+	TheApp::instance()->loadSettings(m_settings);
 }
 
 void MainWindow::resizeAttributesViewSectionsToFit()

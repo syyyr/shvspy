@@ -12,6 +12,7 @@
 #include <QTranslator>
 #include <QDateTime>
 #include <QSettings>
+#include <QFile>
 
 #include <iostream>
 
@@ -25,7 +26,9 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("elektroline.cz");
 	QCoreApplication::setApplicationName("shvspy");
 	QCoreApplication::setApplicationVersion(APP_VERSION);
-
+#ifdef Q_OS_WASM
+	NecroLog::setColorizedOutputMode(NecroLog::ColorizedOutputMode::No);
+#endif
 	std::vector<std::string> shv_args = NecroLog::setCLIOptions(argc, argv);
 
 	int ret = 0;
@@ -65,6 +68,12 @@ int main(int argc, char *argv[])
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 	QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, config_dir);
 	shvInfo() << "Config dir:" << config_dir;
+	QFile f(":/shvspy/config/Elektroline/shvspy.ini");
+	if(f.open(QFile::ReadOnly))
+		shvInfo() << f.fileName() << ":\n" << QString::fromUtf8(f.readAll());
+	else
+		shvWarning() << "Cannot read file:" << f.fileName();
+
 #else
 	if(cli_opts.configDir_isset()) {
 		auto config_dir = QString::fromStdString(cli_opts.configDir());

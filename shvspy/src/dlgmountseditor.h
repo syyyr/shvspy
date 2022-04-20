@@ -1,5 +1,4 @@
-#ifndef DLGMOUNTSSEDITOR_H
-#define DLGMOUNTSEDITOR_H
+#pragma once
 
 #include <QDialog>
 #include <QMap>
@@ -57,4 +56,3 @@ private:
 	QSortFilterProxyModel *m_modelProxy;
 };
 
-#endif // DLGMOUNTSEDITOR_H
