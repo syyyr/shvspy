@@ -51,6 +51,7 @@ DlgServerProperties::~DlgServerProperties()
 QVariantMap DlgServerProperties::serverProperties() const
 {
 	QVariantMap ret;
+	ret["scheme"] = ui->cbxScheme->currentText();
 	ret["name"] = ui->edName->text();
 	ret["host"] = ui->edHost->text();
 	ret["port"] = ui->edPort->value();
@@ -75,6 +76,9 @@ void DlgServerProperties::setServerProperties(const QVariantMap &props)
 {
 	m_subscriptions = props.value(QStringLiteral("subscriptions")).toList();
 
+	ui->cbxScheme->setCurrentText(props.value("scheme").toString());
+	if(ui->cbxScheme->currentIndex() < 0)
+		ui->cbxScheme->setCurrentIndex(0);
 	ui->edName->setText(props.value("name").toString());
 	ui->edHost->setText(props.value("host").toString());
 	ui->edPort->setValue(props.value("port", shv::chainpack::IRpcConnection::DEFAULT_RPC_BROKER_PORT_NONSECURED).toInt());

@@ -150,6 +150,7 @@ void ShvBrokerNodeItem::open()
 	close();
 	shv::iotqt::rpc::ClientConnection *cli = clientConnection();
 	//cli->setServerName(props.value("name").toString());
+	cli->setScheme(m_serverPropeties.value("scheme").toString().toStdString());
 	cli->setHost(m_serverPropeties.value("host").toString().toStdString());
 	cli->setPort(m_serverPropeties.value("port").toInt());
 	cli->setSecurityType(m_serverPropeties.value("securityType").toString().toStdString());
