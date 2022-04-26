@@ -182,15 +182,19 @@ ShvBrokerNodeItem *ServerTreeModel::brokerById(int id)
 void ServerTreeModel::loadSettings(const QSettings &settings)
 {
 	QString servers_json = settings.value("application/servers").toString();
-	QJsonParseError err;
-	QJsonDocument jsd = QJsonDocument::fromJson(servers_json.toUtf8(), &err);
-	if(err.error != QJsonParseError::NoError) {
-		shvError() << "Erorr parse server settings:" << err.errorString();
+	std::string err;
+	shv::chainpack::RpcValue rv = shv::chainpack::RpcValue::fromCpon(servers_json.toStdString(), &err);
+	if(!err.empty()) {
+		shvError() << "Erorr parse server settings:" << err;
 		return;
 	}
-	const QVariantList lst = jsd.toVariant().toList();
-	for(const auto &v : lst) {
-		QVariantMap m = v.toMap();
+	loadSettings(rv);
+}
+
+void ServerTreeModel::loadSettings(const shv::chainpack::RpcValue &settings)
+{
+	for(const auto &rv : settings.asList()) {
+		QVariantMap m = shv::coreqt::Utils::rpcValueToQVariant(rv).toMap();
 		m["password"] = QString::fromStdString(TheApp::instance()->crypt().decrypt(m.value("password").toString().toStdString()));
 		createConnection(m);
 	}

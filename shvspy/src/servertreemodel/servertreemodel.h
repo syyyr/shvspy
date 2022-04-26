@@ -31,6 +31,7 @@ public:
 	ShvBrokerNodeItem* brokerById(int id);
 
 	void loadSettings(const QSettings &settings);
+	void loadSettings(const shv::chainpack::RpcValue &settings);
 	void saveSettings(QSettings &settings);
 public:
 	ShvBrokerNodeItem* createConnection(const QVariantMap &params);

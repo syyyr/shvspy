@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/shvspy/config">
-        <file>Elektroline/shvspy.ini</file>
+        <file>shvspy.json</file>
     </qresource>
 </RCC>
