@@ -164,12 +164,6 @@ void MainWindow::checkSettingsReady()
 		shvWarning() << "Cannot read config file:" << f.fileName();
 	}
 #else
-	if(cli_opts.configDir_isset()) {
-		auto config_dir = QString::fromStdString(cli_opts.configDir());
-		QSettings::setDefaultFormat(QSettings::IniFormat);
-		QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, config_dir);
-		shvInfo() << "Config dir:" << config_dir;
-	}
 	TheApp::instance()->loadSettings(m_settings);
 #endif
 	restoreGeometry(m_settings.value(QStringLiteral("ui/mainWindow/geometry")).toByteArray());
