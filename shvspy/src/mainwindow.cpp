@@ -232,42 +232,50 @@ void MainWindow::on_treeServers_customContextMenuRequested(const QPoint &pos)
 	QModelIndex ix = ui->treeServers->indexAt(pos);
 	ShvNodeItem *nd = TheApp::instance()->serverTreeModel()->itemFromIndex(ix);
 	ShvBrokerNodeItem *snd = qobject_cast<ShvBrokerNodeItem*>(nd);
-	QMenu m;
-	QAction *a_reloadNode = new QAction(tr("Reload"), &m);
-	QAction *a_subscribeNode = new QAction(tr("Subscribe"), &m);
-	QAction *a_callShvMethod = new QAction(tr("Call shv method"), &m);
-	QAction *a_usersEditor = new QAction(tr("Users editor"), &m);
-	QAction *a_rolesEditor = new QAction(tr("Roles editor"), &m);
-	QAction *a_mountsEditor = new QAction(tr("Mounts editor"), &m);
+	QMenu *m = new QMenu();
+	QAction *a_reloadNode = new QAction(tr("Reload"), m);
+	QAction *a_subscribeNode = new QAction(tr("Subscribe"), m);
+	QAction *a_callShvMethod = new QAction(tr("Call shv method"), m);
+	QAction *a_usersEditor = new QAction(tr("Users editor"), m);
+	QAction *a_rolesEditor = new QAction(tr("Roles editor"), m);
+	QAction *a_mountsEditor = new QAction(tr("Mounts editor"), m);
 
 	//QAction *a_test = new QAction(tr("create test.txt"), &m);
 	if(!nd) {
-		m.addAction(ui->actAddServer);
+		m->addAction(ui->actAddServer);
 	}
 	else if(snd) {
-		m.addAction(ui->actAddServer);
-		m.addAction(ui->actEditServer);
-		m.addAction(ui->actCopyServer);
-		m.addAction(ui->actRemoveServer);
+		m->addAction(ui->actAddServer);
+		m->addAction(ui->actEditServer);
+		m->addAction(ui->actCopyServer);
+		m->addAction(ui->actRemoveServer);
 		if(snd->isOpen()) {
-			m.addSeparator();
-			m.addAction(a_reloadNode);
+			m->addSeparator();
+			m->addAction(a_reloadNode);
 		}
 	}
 	else {
-		m.addAction(a_reloadNode);
-		m.addAction(a_subscribeNode);
-		m.addAction(a_callShvMethod);
+		m->addAction(a_reloadNode);
+		m->addAction(a_subscribeNode);
+		m->addAction(a_callShvMethod);
 
 		if (nd->nodeId() == ".broker"){
-			m.addAction(a_usersEditor);
-			m.addAction(a_rolesEditor);
-			m.addAction(a_mountsEditor);
+			m->addAction(a_usersEditor);
+			m->addAction(a_rolesEditor);
+			m->addAction(a_mountsEditor);
 		}
 	}
-	if(!m.actions().isEmpty()) {
-		QAction *a = m.exec(ui->treeServers->viewport()->mapToGlobal(pos));
-		if(a) {
+	if(m->actions().isEmpty()) {
+		delete m;
+	}
+	else {
+		m->popup(ui->treeServers->viewport()->mapToGlobal(pos));
+		connect(m, &QMenu::aboutToHide, this, [=]() {
+			//shvInfo() << "aboutToHide:" << m;
+			m->deleteLater();
+		});
+		connect(m, &QMenu::triggered, this, [=](QAction *a) {
+			//shvInfo() << "MENU ACTION:" << a;
 			if(a == a_reloadNode) {
 				ShvNodeItem *nd = TheApp::instance()->serverTreeModel()->itemFromIndex(ui->treeServers->currentIndex());
 				if(nd)
@@ -319,7 +327,7 @@ void MainWindow::on_treeServers_customContextMenuRequested(const QPoint &pos)
 					dlg.exec();
 				}
 			}
-		}
+		});
 	}
 }
 
@@ -532,16 +540,24 @@ void MainWindow::editServer(ShvBrokerNodeItem *srv, bool copy_server)
 	if(srv) {
 		server_props = srv->serverProperties();
 	}
-	DlgServerProperties dlg(this);
-	dlg.setServerProperties(server_props);
-	if(dlg.exec()) {
-		server_props = dlg.serverProperties();
-		if(!srv || copy_server)
-			TheApp::instance()->serverTreeModel()->createConnection(server_props);
-		else
-			srv->setServerProperties(server_props);
-		saveSettings();
-	}
+	DlgServerProperties *dlg = new DlgServerProperties(this);
+	dlg->setServerProperties(server_props);
+	connect(dlg, &QDialog::finished, this, [=](int result) {
+		if(result == QDialog::Accepted) {
+			QVariantMap server_props = dlg->serverProperties();
+			if(!srv || copy_server)
+				TheApp::instance()->serverTreeModel()->createConnection(server_props);
+			else
+				srv->setServerProperties(server_props);
+			saveSettings();
+		}
+		dlg->deleteLater();
+	});
+	dlg->show();
+//#ifdef Q_OS_WASM
+//#else
+//	int ret = dlg->exec();
+//#endif
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)
