@@ -51,14 +51,6 @@ else {
 	}
 }
 
-force-config-in-resources {
-	message ( "FORCE_CONFIG_IN_RESOURCES defined" )
-	DEFINES += FORCE_CONFIG_IN_RESOURCES
-
-	RESOURCES += \
-		config/config.qrc \
-}
-
 PROJECT_TOP_SRCDIR = $$PWD/../../..
 #QUICKBOX_HOME = $$PROJECT_TOP_SRCDIR/3rdparty/quickbox
 
@@ -74,6 +66,7 @@ INCLUDEPATH += \
 
 RESOURCES += \
 	shvspy.qrc \
+	config/config.qrc \
 
 include (src/src.pri)
 

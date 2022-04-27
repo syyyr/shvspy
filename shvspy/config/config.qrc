@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/shvspy/config">
-        <file>shvspy.json</file>
+        <file>default-config.json</file>
     </qresource>
 </RCC>

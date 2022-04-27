@@ -144,30 +144,52 @@ void MainWindow::checkSettingsReady()
 	}
 	shvInfo() << "Settings initialized OK";
 #endif
-#ifdef FORCE_CONFIG_IN_RESOURCES
-	QFile f(":/shvspy/config/shvspy.json");
-	if(f.open(QFile::ReadOnly)) {
-		QByteArray ba = f.readAll();
-		std::string cpon = ba.toStdString();
-		shvInfo() << "Loading resources setting file:" << f.fileName() << ":\n" << cpon;
-		std::string err;
-		shv::chainpack::RpcValue rv = shv::chainpack::RpcValue::fromCpon(cpon, &err);
-		if(err.empty()) {
-			const shv::chainpack::RpcValue &m = rv.asMap().value("application").asMap().value("servers");
-			TheApp::instance()->serverTreeModel()->loadSettings(m);
+	auto default_config = []() {
+		static bool is_loaded = false;
+		static shv::chainpack::RpcValue config;
+		if(!is_loaded) {
+			is_loaded = true;
+			QFile f(":/shvspy/config/default-config.json");
+			if(f.open(QFile::ReadOnly)) {
+				QByteArray ba = f.readAll();
+				std::string cpon = ba.toStdString();
+				shvInfo() << "Loading resources setting file:" << f.fileName() << ":\n" << cpon;
+				std::string err;
+				config = shv::chainpack::RpcValue::fromCpon(cpon, &err);
+				if(!err.empty()) {
+					shvError() << "Erorr parse config file:" << err;
+				}
+			}
+			else {
+				shvWarning() << "Cannot read config file:" << f.fileName();
+			}
 		}
-		else {
-			shvError() << "Erorr parse config file:" << err;
-		}
+		return config;
+	};
+	QString servers_json = m_settings.value("application/servers").toString();
+	if(servers_json.isEmpty()) {
+		const shv::chainpack::RpcValue rv = default_config();
+		const shv::chainpack::RpcValue &m = rv.asMap().value("application").asMap().value("servers");
+		TheApp::instance()->serverTreeModel()->loadSettings(m);
 	}
 	else {
-		shvWarning() << "Cannot read config file:" << f.fileName();
+		TheApp::instance()->loadSettings(m_settings);
 	}
-#else
-	TheApp::instance()->loadSettings(m_settings);
-#endif
 	restoreGeometry(m_settings.value(QStringLiteral("ui/mainWindow/geometry")).toByteArray());
-	restoreState(m_settings.value(QStringLiteral("ui/mainWindow/state")).toByteArray());
+	QByteArray wstate = m_settings.value(QStringLiteral("ui/mainWindow/state")).toByteArray();
+	if(wstate.isEmpty()) {
+		const shv::chainpack::RpcValue rv = default_config();
+		const std::string &s = rv.asMap().value("ui")
+				.asMap().value("mainWindow")
+				.asMap().value("state").asString();
+		//shvInfo() << "default wstate:" << s;
+		auto ba = QByteArray::fromStdString(s);
+		//shvInfo() << "default wstat2:" << ba.toStdString();
+		wstate = QByteArray::fromHex(ba);
+		//shvInfo() << "default wstat3:" << wstate.toStdString();
+	}
+	//shvInfo() << "restoring wstate:" << wstate.toHex().toStdString();
+	restoreState(wstate);
 }
 
 void MainWindow::resizeAttributesViewSectionsToFit()
@@ -570,7 +592,9 @@ void MainWindow::saveSettings()
 {
 	QSettings settings;
 	TheApp::instance()->saveSettings(settings);
-	settings.setValue(QStringLiteral("ui/mainWindow/state"), saveState());
+	QByteArray ba = saveState();
+	//shvInfo() << "saving wstate:" << ba.toHex().toStdString();
+	settings.setValue(QStringLiteral("ui/mainWindow/state"), ba);
 	settings.setValue(QStringLiteral("ui/mainWindow/geometry"), saveGeometry());
 }
 
