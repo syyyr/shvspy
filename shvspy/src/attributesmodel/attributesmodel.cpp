@@ -142,8 +142,12 @@ QVariant AttributesModel::data(const QModelIndex &ix, int role) const
 			return is_notify? tr("Method is notify signal"): QVariant();
 		}
 		else if(ix.column() == ColMethodName) {
-			auto descr = m_rows[(unsigned)ix.row()][ColDescription].toString();
-			return QString::fromStdString(descr);
+			auto attrs = m_rows[(unsigned)ix.row()][ColAttributes].asMap();
+			QStringList lines;
+			for(const auto &kv : attrs) {
+				lines << tr("%1: %2").arg(kv.first.c_str()).arg(kv.second.toCpon().c_str());
+			}
+			return lines.join('\n');
 		}
 		else {
 			return data(ix, Qt::DisplayRole);
@@ -268,7 +272,7 @@ void AttributesModel::callGetters()
 	for (unsigned i = 0; i < m_rows.size(); ++i) {
 		const ShvMetaMethod *mm = metaMethodAt(i);
 		if(mm) {
-			if((mm->flags & cp::MetaMethod::Flag::IsGetter) && !(mm->flags & cp::MetaMethod::Flag::LargeResultHint)) {
+			if((mm->flags() & cp::MetaMethod::Flag::IsGetter) && !(mm->flags() & cp::MetaMethod::Flag::LargeResultHint)) {
 				callMethod(i);
 			}
 		}
@@ -291,13 +295,13 @@ void AttributesModel::loadRow(unsigned method_ix)
 	if(!mtd)
 		return;
 	RowVals &rv = m_rows[method_ix];
-	shvDebug() << "load row:" << mtd->method << "flags:" << mtd->flags << mtd->flagsStr();
+	shvDebug() << "load row:" << mtd->method << "flags:" << mtd->flags() << mtd->flagsStr();
 	rv[ColMethodName] = mtd->method;
 	rv[ColSignature] = mtd->signatureStr();
 	rv[ColFlags] = mtd->flagsStr();
 	rv[ColAccessGrant] = mtd->accessGrantStr();
 	rv[ColParams] = mtd->params;
-	rv[ColDescription] = mtd->desription;
+	rv[ColAttributes] = mtd->methodAttributes;
 	shvDebug() << "\t response:" << mtd->response.toCpon() << "is valid:" << mtd->response.isValid();
 	if(mtd->response.isError()) {
 		rv[ColResult] = mtd->response.error();

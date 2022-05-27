@@ -15,10 +15,25 @@
 
 namespace cp = shv::chainpack;
 
+cp::MetaMethod::Signature ShvMetaMethod::signature() const
+{
+	return static_cast<cp::MetaMethod::Signature>(methodAttributes.value("signature").toInt());
+}
+
+unsigned ShvMetaMethod::flags() const
+{
+	return methodAttributes.value("flags").toInt();
+}
+
+shv::chainpack::RpcValue ShvMetaMethod::accessGrant() const
+{
+	return methodAttributes.value("accessGrant");
+}
+
 std::string ShvMetaMethod::signatureStr() const
 {
 	std::string ret;
-	switch (signature) {
+	switch (signature()) {
 	case cp::MetaMethod::Signature::VoidVoid: ret = "void()"; break;
 	case cp::MetaMethod::Signature::VoidParam: ret = "void(param)"; break;
 	case cp::MetaMethod::Signature::RetVoid: ret = "ret()"; break;
@@ -32,18 +47,18 @@ std::string ShvMetaMethod::signatureStr() const
 std::string ShvMetaMethod::flagsStr() const
 {
 	std::string ret;
-	if(flags & cp::MetaMethod::Flag::IsSignal)
+	if(flags() & cp::MetaMethod::Flag::IsSignal)
 		ret += (ret.empty()? "": ",") + std::string("SIG");
-	if(flags & cp::MetaMethod::Flag::IsGetter)
+	if(flags() & cp::MetaMethod::Flag::IsGetter)
 		ret += (ret.empty()? "": ",") + std::string("G");
-	if(flags & cp::MetaMethod::Flag::IsSetter)
+	if(flags() & cp::MetaMethod::Flag::IsSetter)
 		ret += (ret.empty()? "": ",") + std::string("S");
 	return ret;
 }
 
 std::string ShvMetaMethod::accessGrantStr() const
 {
-	cp::AccessGrant ag = cp::AccessGrant::fromRpcValue(accessGrant);
+	cp::AccessGrant ag = cp::AccessGrant::fromRpcValue(accessGrant());
 	if(ag.isRole())
 		return ag.role;
 	if(ag.isAccessLevel()) {
@@ -85,7 +100,7 @@ std::string ShvMetaMethod::accessGrantStr() const
 
 bool ShvMetaMethod::isSignal() const
 {
-	return flags & cp::MetaMethod::Flag::IsSignal;
+	return flags() & cp::MetaMethod::Flag::IsSignal;
 }
 
 ShvNodeItem::ShvNodeItem(ServerTreeModel *m, const std::string &ndid, ShvNodeItem *parent)
@@ -237,15 +252,28 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 			m_methodsLoaded = true;
 
 			m_methods.clear();
-			for(const cp::RpcValue &v : resp.result().toList()) {
-				ShvMetaMethod mm;
-				cp::RpcValueGenList lst(v);
-				mm.method = lst.value(0).toString();
-				mm.signature = (cp::MetaMethod::Signature) lst.value(1).toUInt();
-				mm.flags = lst.value(2).toUInt();
-				mm.accessGrant = lst.value(3);
-				mm.desription = lst.value(4);
-				m_methods.push_back(mm);
+			cp::RpcValue methods = resp.result();
+			if(methods.isList()) {
+				for(const cp::RpcValue &v : methods.asList()) {
+					ShvMetaMethod mm;
+					cp::RpcValueGenList lst(v);
+					mm.method = lst.value(0).toString();
+					mm.methodAttributes["signature"] = lst.value(1).toUInt();
+					mm.methodAttributes["flags"] = lst.value(2).toUInt();
+					mm.methodAttributes["accessGrant"] = lst.value(3);
+					mm.methodAttributes["description"] = lst.value(4);
+					cp::RpcValue::Map tags = lst.value(5).asMap();
+					mm.methodAttributes.merge(tags);
+					m_methods.push_back(mm);
+				}
+			}
+			else if(methods.isMap()) {
+				for(const auto &kv : methods.asMap()) {
+					ShvMetaMethod mm;
+					mm.method = kv.first;
+					mm.methodAttributes = kv.second.asMap();
+					m_methods.push_back(mm);
+				}
 			}
 			emit methodsLoaded();
 		}

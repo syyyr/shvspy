@@ -12,15 +12,15 @@
 class ShvBrokerNodeItem;
 class ServerTreeModel;
 
-//namespace shv { namespace chainpack { class RpcMessage; class RpcResponse; } }
-
 struct ShvMetaMethod
 {
 	std::string method;
-	shv::chainpack::MetaMethod::Signature signature = shv::chainpack::MetaMethod::Signature::VoidVoid;
-	unsigned flags = 0;
-	shv::chainpack::RpcValue accessGrant;
-	shv::chainpack::RpcValue desription;
+	shv::chainpack::RpcValue::Map methodAttributes;
+
+	shv::chainpack::MetaMethod::Signature signature() const;
+	unsigned flags() const;
+	shv::chainpack::RpcValue accessGrant() const;
+
 	shv::chainpack::RpcValue params;
 	shv::chainpack::RpcResponse response;
 	int rpcRequestId = 0;

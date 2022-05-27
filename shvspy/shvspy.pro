@@ -12,7 +12,7 @@ isEmpty(LIBSHV_SRC_DIR) {
 }
 
 QT += core gui widgets network websockets
-CONFIG += c++11
+CONFIG += c++17
 
 TEMPLATE = app
 TARGET = shvspy
