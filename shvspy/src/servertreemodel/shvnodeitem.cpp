@@ -253,10 +253,10 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 
 			m_methods.clear();
 			cp::RpcValue methods = resp.result();
-			if(methods.isList()) {
-				for(const cp::RpcValue &v : methods.asList()) {
+			for(const cp::RpcValue &method : methods.asList()) {
+				if(method.isList()) {
 					ShvMetaMethod mm;
-					cp::RpcValueGenList lst(v);
+					cp::RpcValueGenList lst(method);
 					mm.method = lst.value(0).toString();
 					mm.methodAttributes["signature"] = lst.value(1).toUInt();
 					mm.methodAttributes["flags"] = lst.value(2).toUInt();
@@ -266,12 +266,10 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 					mm.methodAttributes.merge(tags);
 					m_methods.push_back(mm);
 				}
-			}
-			else if(methods.isMap()) {
-				for(const auto &kv : methods.asMap()) {
+				else if(method.isMap()) {
 					ShvMetaMethod mm;
-					mm.method = kv.first;
-					mm.methodAttributes = kv.second.asMap();
+					mm.methodAttributes = method.asMap();
+					mm.method = mm.methodAttributes.value("name").asString();
 					m_methods.push_back(mm);
 				}
 			}
