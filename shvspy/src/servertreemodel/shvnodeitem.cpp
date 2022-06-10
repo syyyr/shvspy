@@ -257,7 +257,7 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 				if(method.isList()) {
 					ShvMetaMethod mm;
 					cp::RpcValueGenList lst(method);
-					mm.method = lst.value(0).toString();
+					mm.method = lst.value(0).asString();
 					mm.methodAttributes["signature"] = lst.value(1).toUInt();
 					mm.methodAttributes["flags"] = lst.value(2).toUInt();
 					mm.methodAttributes["accessGrant"] = lst.value(3);
@@ -270,6 +270,11 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 					ShvMetaMethod mm;
 					mm.methodAttributes = method.asMap();
 					mm.method = mm.methodAttributes.value("name").asString();
+					m_methods.push_back(mm);
+				}
+				else if(method.isString()) {
+					ShvMetaMethod mm;
+					mm.method = method.asString();
 					m_methods.push_back(mm);
 				}
 			}
