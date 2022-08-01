@@ -621,9 +621,8 @@ void MainWindow::openLogInspector()
 	ShvNodeItem *nd = TheApp::instance()->serverTreeModel()->itemFromIndex(ui->treeServers->currentIndex());
 	if(nd) {
 		shv::iotqt::rpc::ClientConnection *cc = nd->serverNode()->clientConnection();
-		shv::visu::logview::DlgLogInspector dlg(this);
+		shv::visu::logview::DlgLogInspector dlg(ui->edAttributesShvPath->text(), this);
 		dlg.setRpcConnection(cc);
-		dlg.setShvPath(ui->edAttributesShvPath->text());
 		dlg.exec();
 	}
 }
