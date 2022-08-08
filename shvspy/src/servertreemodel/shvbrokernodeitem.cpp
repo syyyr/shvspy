@@ -148,6 +148,7 @@ const std::string& ShvBrokerNodeItem::shvRoot() const
 void ShvBrokerNodeItem::open()
 {
 	close();
+	m_openStatus = OpenStatus::Connecting;
 	shv::iotqt::rpc::ClientConnection *cli = clientConnection();
 	//cli->setServerName(props.value("name").toString());
 	cli->setScheme(m_serverPropeties.value("scheme").toString().toStdString());
@@ -160,7 +161,6 @@ void ShvBrokerNodeItem::open()
 	cli->setPassword(pwd);
 	cli->setLoginType(pwd.size() == 40? cp::IRpcConnection::LoginType::Sha1: cp::IRpcConnection::LoginType::Plain);
 	cli->open();
-	m_openStatus = OpenStatus::Connecting;
 	emitDataChanged();
 }
 

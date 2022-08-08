@@ -18,7 +18,15 @@ DlgServerProperties::DlgServerProperties(QWidget *parent) :
 
 	ui->cbxConnectionType->addItem(tr("Client"), "client");
 	ui->cbxConnectionType->addItem(tr("Device"), "device");
-	connect(ui->cbxConnectionType, QOverload<int>::of(&QComboBox::currentIndexChanged), ui->grpDevice, [this](int ix) {
+	connect(ui->cbxScheme, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int ix) {
+		bool is_socket = ix < 3;
+		ui->edPort->setEnabled(is_socket);
+		ui->edUser->setEnabled(is_socket);
+		ui->edPassword->setEnabled(is_socket);
+		ui->securityType->setEnabled(is_socket);
+		ui->peerVerify->setEnabled(is_socket);
+	});
+	connect(ui->cbxConnectionType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int ix) {
 		ui->grpDevice->setEnabled(ix == 1);
 	});
 
