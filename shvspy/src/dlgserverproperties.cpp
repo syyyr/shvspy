@@ -18,14 +18,16 @@ DlgServerProperties::DlgServerProperties(QWidget *parent) :
 
 	ui->cbxConnectionType->addItem(tr("Client"), "client");
 	ui->cbxConnectionType->addItem(tr("Device"), "device");
+	/*
 	connect(ui->cbxScheme, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int ix) {
 		bool is_socket = ix < 3;
 		ui->edPort->setEnabled(is_socket);
 		ui->edUser->setEnabled(is_socket);
 		ui->edPassword->setEnabled(is_socket);
-		ui->securityType->setEnabled(is_socket);
-		ui->peerVerify->setEnabled(is_socket);
+		ui->lstSecurityType->setEnabled(is_socket);
+		ui->chkPeerVerify->setEnabled(is_socket);
 	});
+	*/
 	connect(ui->cbxConnectionType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int ix) {
 		ui->grpDevice->setEnabled(ix == 1);
 	});
@@ -38,14 +40,14 @@ DlgServerProperties::DlgServerProperties(QWidget *parent) :
 	ui->rpc_protocolType->setCurrentIndex(0);
 
 	using shv::iotqt::rpc::ClientConnection;
-	ui->securityType->addItem(QString::fromStdString(ClientConnection::securityTypeToString(ClientConnection::None)));
-	ui->securityType->addItem(QString::fromStdString(ClientConnection::securityTypeToString(ClientConnection::Ssl)));
-	ui->securityType->setCurrentIndex(0);
-	ui->peerVerify->setChecked(false);
-	ui->peerVerify->setDisabled(true);
+	ui->lstSecurityType->addItem(QString::fromStdString(ClientConnection::securityTypeToString(ClientConnection::None)));
+	ui->lstSecurityType->addItem(QString::fromStdString(ClientConnection::securityTypeToString(ClientConnection::Ssl)));
+	ui->lstSecurityType->setCurrentIndex(0);
+	ui->chkPeerVerify->setChecked(false);
+	ui->chkPeerVerify->setDisabled(true);
 
-	connect(ui->securityType, &QComboBox::currentTextChanged,
-			[this] (const QString &security_type_text) { ui->peerVerify->setDisabled(security_type_text == "none"); });
+	connect(ui->lstSecurityType, &QComboBox::currentTextChanged,
+			[this] (const QString &security_type_text) { ui->chkPeerVerify->setDisabled(security_type_text == "none"); });
 
 	QSettings settings;
 	restoreGeometry(settings.value(QStringLiteral("ui/dlgServerProperties/geometry")).toByteArray());
@@ -65,8 +67,9 @@ QVariantMap DlgServerProperties::serverProperties() const
 	ret["port"] = ui->edPort->value();
 	ret["user"] = ui->edUser->text();
 	ret["password"] = ui->edPassword->text();
-	ret["securityType"] = ui->securityType->currentText();
-	ret["peerVerify"] = ui->peerVerify->isChecked();
+	ret["skipLoginPhase"] = !ui->grpLogin->isChecked();
+	ret["securityType"] = ui->lstSecurityType->currentText();
+	ret["peerVerify"] = ui->chkPeerVerify->isChecked();
 	ret["connectionType"] = ui->cbxConnectionType->currentData().toString();
 	ret["rpc.protocolType"] = ui->rpc_protocolType->currentData().toInt();
 	ret["rpc.reconnectInterval"] = ui->rpc_reconnectInterval->value();
@@ -88,6 +91,7 @@ void DlgServerProperties::setServerProperties(const QVariantMap &props)
 	if(ui->cbxScheme->currentIndex() < 0)
 		ui->cbxScheme->setCurrentIndex(0);
 	ui->edName->setText(props.value("name").toString());
+	ui->grpLogin->setChecked(!props.value("skipLoginPhase").toBool());
 	ui->edHost->setText(props.value("host").toString());
 	ui->edPort->setValue(props.value("port", shv::chainpack::IRpcConnection::DEFAULT_RPC_BROKER_PORT_NONSECURED).toInt());
 	ui->edUser->setText(props.value("user").toString());
@@ -119,14 +123,14 @@ void DlgServerProperties::setServerProperties(const QVariantMap &props)
 	}
 
 	QString security_type = props.value("securityType").toString();
-	for (int i = 0; i < ui->securityType->count(); ++i) {
-		if (ui->securityType->itemText(i) == security_type) {
-			ui->securityType->setCurrentIndex(i);
+	for (int i = 0; i < ui->lstSecurityType->count(); ++i) {
+		if (ui->lstSecurityType->itemText(i) == security_type) {
+			ui->lstSecurityType->setCurrentIndex(i);
 			break;
 		}
 	}
 
-	ui->peerVerify->setChecked(props.value("peerVerify").toBool());
+	ui->chkPeerVerify->setChecked(props.value("peerVerify").toBool());
 
 	QString conn_type = props.value("connectionType").toString();
 	ui->cbxConnectionType->setCurrentIndex(0);

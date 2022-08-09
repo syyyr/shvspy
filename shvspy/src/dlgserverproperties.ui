@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>613</width>
-    <height>783</height>
+    <height>852</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -68,37 +68,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>&amp;User</string>
-       </property>
-       <property name="buddy">
-        <cstring>edUser</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="edUser"/>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Pass&amp;word</string>
-       </property>
-       <property name="buddy">
-        <cstring>edPassword</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="edPassword">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Connection t&amp;ype</string>
@@ -108,14 +78,14 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QComboBox" name="cbxConnectionType">
        <property name="toolTip">
         <string>Connection type</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Protocol type</string>
@@ -125,14 +95,14 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="1">
       <widget class="QComboBox" name="rpc_protocolType">
        <property name="toolTip">
         <string>Connection type</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label_13">
        <property name="text">
         <string>SHV &amp;root</string>
@@ -142,10 +112,10 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="11" column="1">
       <widget class="QLineEdit" name="shvRoot"/>
      </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
         <string>Reconnect &amp;interval</string>
@@ -155,7 +125,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="12" column="1">
       <widget class="QSpinBox" name="rpc_reconnectInterval">
        <property name="toolTip">
         <string>Reconnect to broker if connection lost at least after recoonect-interval seconds. Disabled when set to 0</string>
@@ -177,14 +147,14 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="label_11">
        <property name="text">
         <string>Heart beat interval</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
+     <item row="13" column="1">
       <widget class="QSpinBox" name="rpc_heartbeatInterval">
        <property name="toolTip">
         <string>Send heart beat to broker every n sec. Disabled when set to 0.</string>
@@ -206,14 +176,14 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="label_12">
        <property name="text">
         <string>RPC Timeout</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="14" column="1">
       <widget class="QSpinBox" name="rpc_timeout">
        <property name="toolTip">
         <string>Send heart beat to broker every n sec. Disabled when set to 0.</string>
@@ -238,7 +208,7 @@
        </property>
       </widget>
      </item>
-     <item row="14" column="0" colspan="2">
+     <item row="15" column="0" colspan="2">
       <widget class="QGroupBox" name="grpDevice">
        <property name="title">
         <string>Device</string>
@@ -267,35 +237,35 @@
        </layout>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="label_14">
        <property name="text">
         <string>&amp;Security type</string>
        </property>
        <property name="buddy">
-        <cstring>securityType</cstring>
+        <cstring>lstSecurityType</cstring>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QComboBox" name="securityType">
+     <item row="7" column="1">
+      <widget class="QComboBox" name="lstSecurityType">
        <property name="toolTip">
         <string>Security type</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="label_15">
        <property name="text">
         <string>Peer &amp;verify</string>
        </property>
        <property name="buddy">
-        <cstring>peerVerify</cstring>
+        <cstring>chkPeerVerify</cstring>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
-      <widget class="QCheckBox" name="peerVerify">
+     <item row="8" column="1">
+      <widget class="QCheckBox" name="chkPeerVerify">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
@@ -341,6 +311,48 @@
          <string>serialport</string>
         </property>
        </item>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QGroupBox" name="grpLogin">
+       <property name="title">
+        <string>Login</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <layout class="QFormLayout" name="formLayout_3">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>&amp;User</string>
+          </property>
+          <property name="buddy">
+           <cstring>edUser</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="edUser"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Pass&amp;word</string>
+          </property>
+          <property name="buddy">
+           <cstring>edPassword</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="edPassword">
+          <property name="echoMode">
+           <enum>QLineEdit::Password</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -389,10 +401,8 @@
   <tabstop>cbxScheme</tabstop>
   <tabstop>edHost</tabstop>
   <tabstop>edPort</tabstop>
-  <tabstop>edUser</tabstop>
-  <tabstop>edPassword</tabstop>
-  <tabstop>securityType</tabstop>
-  <tabstop>peerVerify</tabstop>
+  <tabstop>lstSecurityType</tabstop>
+  <tabstop>chkPeerVerify</tabstop>
   <tabstop>cbxConnectionType</tabstop>
   <tabstop>rpc_protocolType</tabstop>
   <tabstop>shvRoot</tabstop>

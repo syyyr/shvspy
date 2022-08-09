@@ -160,6 +160,7 @@ void ShvBrokerNodeItem::open()
 	std::string pwd = m_serverPropeties.value("password").toString().toStdString();
 	cli->setPassword(pwd);
 	cli->setLoginType(pwd.size() == 40? cp::IRpcConnection::LoginType::Sha1: cp::IRpcConnection::LoginType::Plain);
+	cli->setSkipLoginPhase(m_serverPropeties.value("skipLoginPhase").toBool());
 	cli->open();
 	emitDataChanged();
 }
