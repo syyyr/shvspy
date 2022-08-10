@@ -306,7 +306,7 @@ void MainWindow::on_treeServers_customContextMenuRequested(const QPoint &pos)
 			//shvInfo() << "aboutToHide:" << m;
 			m->deleteLater();
 		});
-		connect(m, &QMenu::triggered, this, [=](QAction *a) {
+		connect(m, &QMenu::triggered, this, [=, this](QAction *a) {
 			//shvInfo() << "MENU ACTION:" << a;
 			if(a == a_reloadNode) {
 				ShvNodeItem *nd = TheApp::instance()->serverTreeModel()->itemFromIndex(ui->treeServers->currentIndex());
@@ -416,7 +416,7 @@ void MainWindow::editMethodParameters(const QModelIndex &ix)
 	QString method = TheApp::instance()->attributesModel()->method(ix.row());
 	auto *dlg = new MethodParametersDialog(path, method, rv, this);
 	dlg->setWindowTitle(tr("Parameters"));
-	connect(dlg, &QDialog::finished, this, [=](int result) {
+	connect(dlg, &QDialog::finished, this, [=, this](int result) {
 		if (result == QDialog::Accepted) {
 			cp::RpcValue val = dlg->value();
 			if (val.isValid()) {
@@ -441,7 +441,7 @@ void MainWindow::editStringParameter(const QModelIndex &ix)
 	dlg->setWindowTitle(tr("Parameters"));
 	dlg->setReadOnly(false);
 	dlg->setText(cpon);
-	connect(dlg, &QDialog::finished, this, [=](int result) {
+	connect(dlg, &QDialog::finished, this, [=, this](int result) {
 		if (result == QDialog::Accepted) {
 			auto rv = cp::RpcValue(dlg->text().toStdString());
 			auto cpon =  QString::fromStdString(rv.toCpon());
@@ -462,7 +462,7 @@ void MainWindow::editCponParameters(const QModelIndex &ix)
 	dlg->setReadOnly(false);
 	dlg->setValidateContent(true);
 	dlg->setText(cpon);
-	connect(dlg, &QDialog::finished, this, [=](int result) {
+	connect(dlg, &QDialog::finished, this, [=, this](int result) {
 		if (result == QDialog::Accepted) {
 			auto cpon = dlg->text();
 			ui->tblAttributes->model()->setData(ix, cpon, Qt::EditRole);
@@ -586,7 +586,7 @@ void MainWindow::editServer(ShvBrokerNodeItem *srv, bool copy_server)
 	}
 	DlgServerProperties *dlg = new DlgServerProperties(this);
 	dlg->setServerProperties(server_props);
-	connect(dlg, &QDialog::finished, this, [=](int result) {
+	connect(dlg, &QDialog::finished, this, [=, this](int result) {
 		if(result == QDialog::Accepted) {
 			QVariantMap server_props = dlg->serverProperties();
 			if(!srv || copy_server)
