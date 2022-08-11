@@ -6,3 +6,11 @@ Qt GUI tool for shvbroker administration and browsing
 
 <img width="922" alt="image" src="https://user-images.githubusercontent.com/4949019/115882642-3dba7900-a44d-11eb-9769-630631d70f24.png">
 
+## Graph view short-cuts
+| short-cut | action |
+|-----------|--------|
+| `Drag` | create selection with pop-up |
+| `Shift`-`Drag` | zoom to selection horizontaly |
+| `Ctrl`-`Drag` | move graph horizontaly |
+| `Ctrl`-`Wheel` | zoom in/out horizontaly under mouse position |
+| `DoubleClick` on minimap | reset horizontal zoom |
