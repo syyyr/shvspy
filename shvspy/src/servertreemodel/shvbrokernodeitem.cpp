@@ -337,27 +337,31 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 		cp::RpcResponse resp = cp::RpcResponse::forRequest(rq);
 		try {
 			//shvInfo() << "RPC request received:" << rq.toCpon();
-			cp::RpcValue shv_path = rq.shvPath();
-			if(!shv_path.asString().empty())
-				SHV_EXCEPTION("Invalid path: " + shv_path.toString());
-			const cp::RpcValue method = rq.method();
-			if(method == cp::Rpc::METH_DIR) {
-				resp.setResult(cp::RpcValue::List{
-								   cp::Rpc::METH_DIR,
-								   //cp::Rpc::METH_PING,
-								   cp::Rpc::METH_APP_NAME,
-								   //cp::Rpc::METH_CONNECTION_TYPE,
-							   });
-			}
-			//else if(method.toString() == cp::Rpc::METH_PING) {
-			//	resp.setResult(true);
-			//}
-			else if(method.asString() == cp::Rpc::METH_APP_NAME) {
-				resp.setResult(QCoreApplication::instance()->applicationName().toStdString());
-			}
-			//else if(method.toString() == cp::Rpc::METH_CONNECTION_TYPE) {
-			//	resp.setResult(m_rpcConnection->connectionType());
-			//}
+			do {
+				const auto shv_path = rq.shvPath().asString();
+				const auto method = rq.method().asString();
+				if(shv_path == shv::chainpack::Rpc::DIR_BROKER_APP
+						&& method == cp::Rpc::METH_PING) {
+						resp.setResult(true);
+						break;
+				}
+				else if(shv_path.empty()) {
+					if(method == cp::Rpc::METH_DIR) {
+						resp.setResult(cp::RpcValue::List{
+										   cp::Rpc::METH_DIR,
+										   //cp::Rpc::METH_PING,
+										   cp::Rpc::METH_APP_NAME,
+										   //cp::Rpc::METH_CONNECTION_TYPE,
+									   });
+						break;
+					}
+					else if(method == cp::Rpc::METH_APP_NAME) {
+						resp.setResult(QCoreApplication::instance()->applicationName().toStdString());
+						break;
+					}
+				}
+				SHV_EXCEPTION("Invalid method: " + method + " on path: " + shv_path);
+			} while (false);
 		}
 		catch (shv::core::Exception &e) {
 			resp.setError(cp::RpcResponse::Error::create(cp::RpcResponse::Error::MethodCallException, e.message()));
