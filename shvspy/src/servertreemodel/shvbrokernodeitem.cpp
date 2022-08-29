@@ -1,6 +1,6 @@
 #include "shvbrokernodeitem.h"
+#include "servertreemodel.h"
 #include "../theapp.h"
-#include "../appclioptions.h"
 #include "../log/rpcnotificationsmodel.h"
 #include "../attributesmodel/attributesmodel.h"
 
@@ -148,6 +148,7 @@ const std::string& ShvBrokerNodeItem::shvRoot() const
 void ShvBrokerNodeItem::open()
 {
 	close();
+	m_brokerLoginErrorCount = 0;
 	m_openStatus = OpenStatus::Connecting;
 	shv::iotqt::rpc::ClientConnection *cli = clientConnection();
 	//cli->setServerName(props.value("name").toString());
@@ -228,6 +229,7 @@ shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 		//m_rpcConnection->setCheckBrokerConnectedInterval(0);
 		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerConnectedChanged, this, &ShvBrokerNodeItem::onBrokerConnectedChanged);
 		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::rpcMessageReceived, this, &ShvBrokerNodeItem::onRpcMessageReceived);
+		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerLoginError, this, &ShvBrokerNodeItem::onBrokerLoginError);
 	}
 	return m_rpcConnection;
 }
@@ -250,6 +252,11 @@ void ShvBrokerNodeItem::onBrokerConnectedChanged(bool is_connected)
 	}
 
 	emit brokerConnectedChange(is_connected);
+}
+
+void ShvBrokerNodeItem::onBrokerLoginError(const std::string &err)
+{
+	emit treeModel()->brokerLoginError(brokerId(), QString::fromStdString(err), ++m_brokerLoginErrorCount);
 }
 
 ShvNodeItem* ShvBrokerNodeItem::findNode(const std::string &path_)

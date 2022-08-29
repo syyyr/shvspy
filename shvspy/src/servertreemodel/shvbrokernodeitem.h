@@ -55,6 +55,7 @@ public:
 
 private:
 	void onBrokerConnectedChanged(bool is_connected);
+	void onBrokerLoginError(const std::string &err);
 	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
 	void createSubscriptions();
 	int callSubscribe(const std::string &shv_path, std::string method);
@@ -68,5 +69,6 @@ private:
 	struct RpcRequestInfo;
 	std::map<int, RpcRequestInfo> m_runningRpcRequests;
 	std::string m_shvRoot;
+	int m_brokerLoginErrorCount = 0;
 };
 
