@@ -152,10 +152,23 @@ void ShvBrokerNodeItem::open()
 	m_openStatus = OpenStatus::Connecting;
 	shv::iotqt::rpc::ClientConnection *cli = clientConnection();
 	//cli->setServerName(props.value("name").toString());
-	cli->setScheme(m_serverPropeties.value("scheme").toString().toStdString());
-	cli->setHost(m_serverPropeties.value("host").toString().toStdString());
-	cli->setPort(m_serverPropeties.value("port").toInt());
-	cli->setSecurityType(m_serverPropeties.value("securityType").toString().toStdString());
+	//cli->setScheme(m_serverPropeties.value("scheme").toString().toStdString());
+	auto scheme = m_serverPropeties.value("scheme").toString().toStdString();
+	if(scheme == "shv" && m_serverPropeties.value("securityType").toString() == "SSL")
+		scheme = "shvs";
+	auto host = m_serverPropeties.value("host").toString().toStdString();
+	auto port = m_serverPropeties.value("port").toInt();
+	if(scheme == "localsocket" || host == "serialport") {
+		host = scheme + ":" + host;
+	}
+	else {
+		host = scheme + "://" + host;
+		if(port > 0)
+			host += ':' + QString::number(port).toStdString();
+	}
+	cli->setHost(host);
+	//cli->setPort(m_serverPropeties.value("port").toInt());
+	//cli->setSecurityType(m_serverPropeties.value("securityType").toString().toStdString());
 	cli->setPeerVerify(m_serverPropeties.value("peerVerify").toBool());
 	cli->setUser(m_serverPropeties.value("user").toString().toStdString());
 	std::string pwd = m_serverPropeties.value("password").toString().toStdString();

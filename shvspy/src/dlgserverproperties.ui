@@ -288,7 +288,7 @@
       <widget class="QComboBox" name="cbxScheme">
        <item>
         <property name="text">
-         <string>tcp</string>
+         <string>shv</string>
         </property>
        </item>
        <item>

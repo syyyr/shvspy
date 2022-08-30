@@ -40,8 +40,8 @@ DlgServerProperties::DlgServerProperties(QWidget *parent) :
 	ui->rpc_protocolType->setCurrentIndex(0);
 
 	using shv::iotqt::rpc::ClientConnection;
-	ui->lstSecurityType->addItem(QString::fromStdString(ClientConnection::securityTypeToString(ClientConnection::None)));
-	ui->lstSecurityType->addItem(QString::fromStdString(ClientConnection::securityTypeToString(ClientConnection::Ssl)));
+	ui->lstSecurityType->addItem(tr("None"), false);
+	ui->lstSecurityType->addItem("SSL", true);
 	ui->lstSecurityType->setCurrentIndex(0);
 	ui->chkPeerVerify->setChecked(false);
 	ui->chkPeerVerify->setDisabled(true);
