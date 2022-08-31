@@ -8,6 +8,7 @@
 #include <shv/iotqt/rpc/deviceconnection.h>
 #include <shv/iotqt/rpc/deviceappclioptions.h>
 #include <shv/iotqt/rpc/rpcresponsecallback.h>
+#include <shv/iotqt/rpc/socket.h>
 #include <shv/iotqt/node/shvnode.h>
 #include <shv/core/utils/shvpath.h>
 #include <shv/visu/errorlogmodel.h>
@@ -154,8 +155,10 @@ void ShvBrokerNodeItem::open()
 	//cli->setServerName(props.value("name").toString());
 	//cli->setScheme(m_serverPropeties.value("scheme").toString().toStdString());
 	auto scheme = m_serverPropeties.value("scheme").toString().toStdString();
-	if(scheme == "shv" && m_serverPropeties.value("securityType").toString() == "SSL")
-		scheme = "shvs";
+	auto scheme_enum = shv::iotqt::rpc::Socket::schemeFromString(scheme);
+	if(scheme_enum == shv::iotqt::rpc::Socket::Scheme::Tcp && m_serverPropeties.value("securityType").toString() == "SSL")
+		scheme_enum = shv::iotqt::rpc::Socket::Scheme::Ssl;
+	scheme = shv::iotqt::rpc::Socket::schemeToString(scheme_enum);
 	auto host = m_serverPropeties.value("host").toString().toStdString();
 	auto port = m_serverPropeties.value("port").toInt();
 	if(scheme == "localsocket" || host == "serialport") {
