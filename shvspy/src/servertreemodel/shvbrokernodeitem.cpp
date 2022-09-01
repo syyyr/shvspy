@@ -161,7 +161,7 @@ void ShvBrokerNodeItem::open()
 	scheme = shv::iotqt::rpc::Socket::schemeToString(scheme_enum);
 	auto host = m_serverPropeties.value("host").toString().toStdString();
 	auto port = m_serverPropeties.value("port").toInt();
-	if(scheme == "localsocket" || host == "serialport") {
+	if(scheme_enum == shv::iotqt::rpc::Socket::Scheme::LocalSocket || scheme_enum == shv::iotqt::rpc::Socket::Scheme::SerialPort) {
 		host = scheme + ":" + host;
 	}
 	else {
@@ -246,6 +246,7 @@ shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerConnectedChanged, this, &ShvBrokerNodeItem::onBrokerConnectedChanged);
 		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::rpcMessageReceived, this, &ShvBrokerNodeItem::onRpcMessageReceived);
 		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::brokerLoginError, this, &ShvBrokerNodeItem::onBrokerLoginError);
+		connect(m_rpcConnection, &shv::iotqt::rpc::ClientConnection::socketError, this, &ShvBrokerNodeItem::onBrokerLoginError);
 	}
 	return m_rpcConnection;
 }
@@ -270,9 +271,9 @@ void ShvBrokerNodeItem::onBrokerConnectedChanged(bool is_connected)
 	emit brokerConnectedChange(is_connected);
 }
 
-void ShvBrokerNodeItem::onBrokerLoginError(const std::string &err)
+void ShvBrokerNodeItem::onBrokerLoginError(const QString &err)
 {
-	emit treeModel()->brokerLoginError(brokerId(), QString::fromStdString(err), ++m_brokerLoginErrorCount);
+	emit treeModel()->brokerLoginError(brokerId(), err, ++m_brokerLoginErrorCount);
 }
 
 ShvNodeItem* ShvBrokerNodeItem::findNode(const std::string &path_)

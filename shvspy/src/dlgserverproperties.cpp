@@ -3,18 +3,36 @@
 
 #include <shv/chainpack/irpcconnection.h>
 #include <shv/iotqt/rpc/clientconnection.h>
+#include <shv/iotqt/rpc/socket.h>
 
 #include <QSettings>
 
 #include <shv/core/log.h>
 
-namespace cp = shv::chainpack;
+using namespace shv::chainpack;
 
 DlgServerProperties::DlgServerProperties(QWidget *parent) :
 	Super(parent),
 	ui(new Ui::DlgServerProperties)
 {
 	ui->setupUi(this);
+	{
+		using namespace shv::iotqt::rpc;
+		using Scheme = Socket::Scheme;
+		auto *cbx = ui->cbxScheme;
+		cbx->addItem(Socket::schemeToString(Scheme::Tcp), (int)Scheme::Tcp);
+		cbx->addItem(Socket::schemeToString(Scheme::WebSocket), (int)Scheme::WebSocket);
+		cbx->addItem(Socket::schemeToString(Scheme::WebSocketSecure), (int)Scheme::WebSocketSecure);
+		cbx->addItem(Socket::schemeToString(Scheme::SerialPort), (int)Scheme::SerialPort);
+		cbx->addItem(Socket::schemeToString(Scheme::LocalSocket), (int)Scheme::LocalSocket);
+		cbx->setCurrentIndex(0);
+	}
+	connect(ui->cbxScheme, qOverload<int>(&QComboBox::currentIndexChanged), this, [this] (int ix) {
+		using namespace shv::iotqt::rpc;
+		using Scheme = Socket::Scheme;
+		auto scheme = (Scheme)ui->cbxScheme->itemData(ix).toInt();
+		ui->edPort->setEnabled(scheme == Scheme::Tcp || scheme == Scheme::WebSocket || scheme == Scheme::WebSocketSecure);
+	});
 
 	ui->cbxConnectionType->addItem(tr("Client"), "client");
 	ui->cbxConnectionType->addItem(tr("Device"), "device");
@@ -34,9 +52,9 @@ DlgServerProperties::DlgServerProperties(QWidget *parent) :
 
 	ui->cbxConnectionType->setCurrentIndex(0);
 
-	ui->rpc_protocolType->addItem(cp::Rpc::protocolTypeToString(cp::Rpc::ProtocolType::ChainPack), (int)cp::Rpc::ProtocolType::ChainPack);
-	ui->rpc_protocolType->addItem(cp::Rpc::protocolTypeToString(cp::Rpc::ProtocolType::Cpon), (int)cp::Rpc::ProtocolType::Cpon);
-	ui->rpc_protocolType->addItem(cp::Rpc::protocolTypeToString(cp::Rpc::ProtocolType::JsonRpc), (int)cp::Rpc::ProtocolType::JsonRpc);
+	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::ChainPack), (int)Rpc::ProtocolType::ChainPack);
+	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::Cpon), (int)Rpc::ProtocolType::Cpon);
+	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::JsonRpc), (int)Rpc::ProtocolType::JsonRpc);
 	ui->rpc_protocolType->setCurrentIndex(0);
 
 	using shv::iotqt::rpc::ClientConnection;

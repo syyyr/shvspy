@@ -55,7 +55,7 @@ public:
 
 private:
 	void onBrokerConnectedChanged(bool is_connected);
-	void onBrokerLoginError(const std::string &err);
+	void onBrokerLoginError(const QString &err);
 	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
 	void createSubscriptions();
 	int callSubscribe(const std::string &shv_path, std::string method);
