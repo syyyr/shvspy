@@ -27,7 +27,7 @@ add_executable(shvspy
     src/appclioptions.cpp
     src/main.cpp
     src/mainwindow.cpp
-    src/dlgserverproperties.cpp
+	src/dlgbrokerproperties.cpp
     shvspy.qrc
     config/config.qrc
 )
