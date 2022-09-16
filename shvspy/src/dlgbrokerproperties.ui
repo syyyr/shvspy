@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgServerProperties</class>
- <widget class="QDialog" name="DlgServerProperties">
+ <class>DlgBrokerProperties</class>
+ <widget class="QDialog" name="DlgBrokerProperties">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -392,7 +392,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>DlgServerProperties</receiver>
+   <receiver>DlgBrokerProperties</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -408,7 +408,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>DlgServerProperties</receiver>
+   <receiver>DlgBrokerProperties</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

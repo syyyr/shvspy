@@ -33,8 +33,8 @@ public:
 	//QString connectionErrorString();
 	const std::string &shvRoot() const;
 
-	QVariantMap serverProperties() const;
-	void setServerProperties(const QVariantMap &props);
+	QVariantMap brokerProperties() const;
+	void setBrokerProperties(const QVariantMap &props);
 
 	void setSubscriptionList(const QVariantList &subs);
 	void addSubscription(const std::string &shv_path, const std::string &method);
@@ -63,7 +63,7 @@ private:
 
 private:
 	int m_brokerId;
-	QVariantMap m_serverPropeties;
+	QVariantMap m_brokerPropeties;
 	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
 	OpenStatus m_openStatus = OpenStatus::Disconnected;
 	struct RpcRequestInfo;

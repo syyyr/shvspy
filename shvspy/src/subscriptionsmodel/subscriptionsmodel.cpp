@@ -203,7 +203,7 @@ void SubscriptionsModel::onBrokerConnectedChanged(int broker_id, bool is_connect
 	beginResetModel();
 	if (is_connected){
 		QMetaEnum met_sub = QMetaEnum::fromType<ShvBrokerNodeItem::SubscriptionItem>();
-		QVariant v = nd->serverProperties().value(ShvBrokerNodeItem::SUBSCRIPTIONS);
+		QVariant v = nd->brokerProperties().value(ShvBrokerNodeItem::SUBSCRIPTIONS);
 
 		if(v.isValid()) {
 			QVariantList subs = v.toList();

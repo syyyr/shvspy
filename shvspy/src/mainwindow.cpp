@@ -5,7 +5,7 @@
 #include "servertreemodel/servertreemodel.h"
 #include "servertreemodel/shvbrokernodeitem.h"
 #include "log/rpcnotificationsmodel.h"
-#include "dlgserverproperties.h"
+#include "dlgbrokerproperties.h"
 #include "dlgsubscriptionparameters.h"
 #include "dlgcallshvmethod.h"
 #include "dlguserseditor.h"
@@ -590,19 +590,19 @@ void MainWindow::onShvTreeViewCurrentSelectionChanged(const QModelIndex &curr_ix
 void MainWindow::editServer(ShvBrokerNodeItem *srv, bool copy_server)
 {
 	shvLogFuncFrame() << srv;
-	QVariantMap server_props;
+	QVariantMap broker_props;
 	if(srv) {
-		server_props = srv->serverProperties();
+		broker_props = srv->brokerProperties();
 	}
-	DlgServerProperties *dlg = new DlgServerProperties(this);
-	dlg->setServerProperties(server_props);
+	DlgBrokerProperties *dlg = new DlgBrokerProperties(this);
+	dlg->setServerProperties(broker_props);
 	connect(dlg, &QDialog::finished, this, [=, this](int result) {
 		if(result == QDialog::Accepted) {
-			QVariantMap server_props = dlg->serverProperties();
+			QVariantMap broker_props = dlg->serverProperties();
 			if(!srv || copy_server)
-				TheApp::instance()->serverTreeModel()->createConnection(server_props);
+				TheApp::instance()->serverTreeModel()->createConnection(broker_props);
 			else
-				srv->setServerProperties(server_props);
+				srv->setBrokerProperties(broker_props);
 			saveSettings();
 		}
 		dlg->deleteLater();

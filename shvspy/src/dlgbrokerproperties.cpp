@@ -1,5 +1,5 @@
-#include "dlgserverproperties.h"
-#include "ui_dlgserverproperties.h"
+#include "dlgbrokerproperties.h"
+#include "ui_dlgbrokerproperties.h"
 
 #include <shv/chainpack/irpcconnection.h>
 #include <shv/iotqt/rpc/clientconnection.h>
@@ -11,9 +11,9 @@
 
 using namespace shv::chainpack;
 
-DlgServerProperties::DlgServerProperties(QWidget *parent) :
+DlgBrokerProperties::DlgBrokerProperties(QWidget *parent) :
 	Super(parent),
-	ui(new Ui::DlgServerProperties)
+	ui(new Ui::DlgBrokerProperties)
 {
 	ui->setupUi(this);
 	{
@@ -71,12 +71,12 @@ DlgServerProperties::DlgServerProperties(QWidget *parent) :
 	restoreGeometry(settings.value(QStringLiteral("ui/dlgServerProperties/geometry")).toByteArray());
 }
 
-DlgServerProperties::~DlgServerProperties()
+DlgBrokerProperties::~DlgBrokerProperties()
 {
 	delete ui;
 }
 
-QVariantMap DlgServerProperties::serverProperties() const
+QVariantMap DlgBrokerProperties::serverProperties() const
 {
 	QVariantMap ret;
 	ret["scheme"] = ui->cbxScheme->currentText();
@@ -101,7 +101,7 @@ QVariantMap DlgServerProperties::serverProperties() const
 	return ret;
 }
 
-void DlgServerProperties::setServerProperties(const QVariantMap &props)
+void DlgBrokerProperties::setServerProperties(const QVariantMap &props)
 {
 	m_subscriptions = props.value(QStringLiteral("subscriptions")).toList();
 
@@ -171,7 +171,7 @@ void DlgServerProperties::setServerProperties(const QVariantMap &props)
 	ui->shvRoot->setText(props.value("shvRoot").toString());
 }
 
-void DlgServerProperties::done(int res)
+void DlgBrokerProperties::done(int res)
 {
 	QSettings settings;
 	settings.setValue(QStringLiteral("ui/dlgServerProperties/geometry"), saveGeometry());

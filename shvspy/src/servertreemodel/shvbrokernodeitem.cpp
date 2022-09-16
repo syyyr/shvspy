@@ -94,14 +94,14 @@ QVariant ShvBrokerNodeItem::data(int role) const
 	return ret;
 }
 
-QVariantMap ShvBrokerNodeItem::serverProperties() const
+QVariantMap ShvBrokerNodeItem::brokerProperties() const
 {
-	return m_serverPropeties;
+	return m_brokerPropeties;
 }
 
 void ShvBrokerNodeItem::setSubscriptionList(const QVariantList &subs)
 {
-	m_serverPropeties[SUBSCRIPTIONS] = subs;
+	m_brokerPropeties[SUBSCRIPTIONS] = subs;
 }
 
 
@@ -130,15 +130,15 @@ void ShvBrokerNodeItem::enableSubscription(const std::string &shv_path, const st
 	}
 }
 
-void ShvBrokerNodeItem::setServerProperties(const QVariantMap &props)
+void ShvBrokerNodeItem::setBrokerProperties(const QVariantMap &props)
 {
 	if(m_rpcConnection) {
 		delete m_rpcConnection;
 		m_rpcConnection = nullptr;
 	}
-	m_serverPropeties = props;
-	setNodeId(m_serverPropeties.value("name").toString().toStdString());
-	m_shvRoot = m_serverPropeties.value("shvRoot").toString().toStdString();
+	m_brokerPropeties = props;
+	setNodeId(m_brokerPropeties.value("name").toString().toStdString());
+	m_shvRoot = m_brokerPropeties.value("shvRoot").toString().toStdString();
 }
 
 const std::string& ShvBrokerNodeItem::shvRoot() const
@@ -154,30 +154,32 @@ void ShvBrokerNodeItem::open()
 	shv::iotqt::rpc::ClientConnection *cli = clientConnection();
 	//cli->setServerName(props.value("name").toString());
 	//cli->setScheme(m_serverPropeties.value("scheme").toString().toStdString());
-	auto scheme = m_serverPropeties.value("scheme").toString().toStdString();
+	auto scheme = m_brokerPropeties.value("scheme").toString().toStdString();
 	auto scheme_enum = shv::iotqt::rpc::Socket::schemeFromString(scheme);
-	if(scheme_enum == shv::iotqt::rpc::Socket::Scheme::Tcp && m_serverPropeties.value("securityType").toString() == "SSL")
+	if(scheme_enum == shv::iotqt::rpc::Socket::Scheme::Tcp && m_brokerPropeties.value("securityType").toString() == "SSL")
 		scheme_enum = shv::iotqt::rpc::Socket::Scheme::Ssl;
 	scheme = shv::iotqt::rpc::Socket::schemeToString(scheme_enum);
-	auto host = m_serverPropeties.value("host").toString().toStdString();
-	auto port = m_serverPropeties.value("port").toInt();
+	auto host = m_brokerPropeties.value("host").toString().toStdString();
+	auto port = m_brokerPropeties.value("port").toInt();
+	std::string pwd = m_brokerPropeties.value("password").toString().toStdString();
 	if(scheme_enum == shv::iotqt::rpc::Socket::Scheme::LocalSocket || scheme_enum == shv::iotqt::rpc::Socket::Scheme::SerialPort) {
 		host = scheme + ":" + host;
+		cli->setLoginType(shv::iotqt::rpc::ClientConnection::LoginType::None);
 	}
 	else {
 		host = scheme + "://" + host;
 		if(port > 0)
 			host += ':' + QString::number(port).toStdString();
+		//cli->setLoginType(pwd.size() == 40? cp::IRpcConnection::LoginType::Sha1: cp::IRpcConnection::LoginType::Plain);
+		cli->setLoginType(cp::IRpcConnection::LoginType::Sha1);
 	}
 	cli->setHost(host);
 	//cli->setPort(m_serverPropeties.value("port").toInt());
 	//cli->setSecurityType(m_serverPropeties.value("securityType").toString().toStdString());
-	cli->setPeerVerify(m_serverPropeties.value("peerVerify").toBool());
-	cli->setUser(m_serverPropeties.value("user").toString().toStdString());
-	std::string pwd = m_serverPropeties.value("password").toString().toStdString();
+	cli->setPeerVerify(m_brokerPropeties.value("peerVerify").toBool());
+	cli->setUser(m_brokerPropeties.value("user").toString().toStdString());
 	cli->setPassword(pwd);
-	cli->setLoginType(pwd.size() == 40? cp::IRpcConnection::LoginType::Sha1: cp::IRpcConnection::LoginType::Plain);
-	cli->setSkipLoginPhase(m_serverPropeties.value("skipLoginPhase").toBool());
+	//cli->setSkipLoginPhase(m_brokerPropeties.value("skipLoginPhase").toBool());
 	cli->open();
 	emitDataChanged();
 }
@@ -196,11 +198,11 @@ void ShvBrokerNodeItem::close()
 shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 {
 	if(!m_rpcConnection) {
-		QString conn_type = m_serverPropeties.value("connectionType").toString();
+		QString conn_type = m_brokerPropeties.value("connectionType").toString();
 
 		shv::iotqt::rpc::DeviceAppCliOptions opts;
 		{
-			int proto_type = m_serverPropeties.value("rpc.protocolType").toInt();
+			int proto_type = m_brokerPropeties.value("rpc.protocolType").toInt();
 			if(proto_type == (int)cp::Rpc::ProtocolType::JsonRpc)
 				opts.setProtocolType("jsonrpc");
 			else if(proto_type == (int)cp::Rpc::ProtocolType::Cpon)
@@ -209,27 +211,27 @@ shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 				opts.setProtocolType("chainpack");
 		}
 		{
-			QVariant v = m_serverPropeties.value("rpc.reconnectInterval");
+			QVariant v = m_brokerPropeties.value("rpc.reconnectInterval");
 			if(v.isValid())
 				opts.setReconnectInterval(v.toInt());
 		}
 		{
-			QVariant v = m_serverPropeties.value("rpc.heartbeatInterval");
+			QVariant v = m_brokerPropeties.value("rpc.heartbeatInterval");
 			if(v.isValid())
 				opts.setHeartBeatInterval(v.toInt());
 		}
 		{
-			QVariant v = m_serverPropeties.value("rpc.defaultRpcTimeout");
+			QVariant v = m_brokerPropeties.value("rpc.defaultRpcTimeout");
 			if(v.isValid())
 				opts.setDefaultRpcTimeout(v.toInt());
 		}
 		{
-			QString dev_id = m_serverPropeties.value("device.id").toString();
+			QString dev_id = m_brokerPropeties.value("device.id").toString();
 			if(!dev_id.isEmpty())
 				opts.setDeviceId(dev_id.toStdString());
 		}
 		{
-			QString mount_point = m_serverPropeties.value("device.mountPoint").toString();
+			QString mount_point = m_brokerPropeties.value("device.mountPoint").toString();
 			if(!mount_point.isEmpty())
 				opts.setMountPoint(mount_point.toStdString());
 		}
@@ -394,7 +396,7 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 	}
 	else if(msg.isSignal()) {
 		shvDebug() << msg.toCpon();
-		if(serverProperties().value(QStringLiteral("muteHeartBeats")).toBool()) {
+		if(brokerProperties().value(QStringLiteral("muteHeartBeats")).toBool()) {
 			if(msg.method().asString() == "appserver.heartBeat")
 				return;
 		}
@@ -406,7 +408,7 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 void ShvBrokerNodeItem::createSubscriptions()
 {
 	QMetaEnum meta_sub = QMetaEnum::fromType<SubscriptionItem>();
-	QVariant v = m_serverPropeties.value(SUBSCRIPTIONS);
+	QVariant v = m_brokerPropeties.value(SUBSCRIPTIONS);
 	if(v.isValid()) {
 		QVariantList subs = v.toList();
 

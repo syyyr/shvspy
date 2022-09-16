@@ -62,7 +62,7 @@ ShvBrokerNodeItem *ServerTreeModel::createConnection(const QVariantMap &params)
 	});
 
 	const std::string broker_name = ret->nodeId();
-	ret->setServerProperties(params);
+	ret->setBrokerProperties(params);
 	ShvNodeRootItem *root = invisibleRootItem();
 	root->appendChild(ret);
 	return ret;
@@ -207,7 +207,7 @@ void ServerTreeModel::saveSettings(QSettings &settings)
 	for(int i=0; i<root->childCount(); i++) {
 		ShvBrokerNodeItem *nd = qobject_cast<ShvBrokerNodeItem*>(root->childAt(i));
 		SHV_ASSERT_EX(nd != nullptr, "Internal error");
-		QVariantMap props = nd->serverProperties();
+		QVariantMap props = nd->brokerProperties();
 		props["password"] = QString::fromStdString(TheApp::instance()->crypt().encrypt(props.value("password").toString().toStdString(), 30));
 		lst << props;
 	}

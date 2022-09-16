@@ -1,21 +1,21 @@
-#ifndef DLGSERVERPROPERTIES_H
-#define DLGSERVERPROPERTIES_H
+#ifndef DLGBROKERPROPERTIES_H
+#define DLGBROKERPROPERTIES_H
 
 #include <QDialog>
 #include <QVariantMap>
 
 namespace Ui {
-class DlgServerProperties;
+class DlgBrokerProperties;
 }
 
-class DlgServerProperties : public QDialog
+class DlgBrokerProperties : public QDialog
 {
 	Q_OBJECT
 private:
 	typedef QDialog Super;
 public:
-	explicit DlgServerProperties(QWidget *parent = nullptr);
-	~DlgServerProperties() Q_DECL_OVERRIDE;
+	explicit DlgBrokerProperties(QWidget *parent = nullptr);
+	~DlgBrokerProperties() Q_DECL_OVERRIDE;
 
 	QVariantMap serverProperties() const;
 	void setServerProperties(const QVariantMap &props);
@@ -23,8 +23,8 @@ public:
 	void done(int res) Q_DECL_OVERRIDE;
 
 private:
-	Ui::DlgServerProperties *ui;
+	Ui::DlgBrokerProperties *ui;
 	QVariantList m_subscriptions;
 };
 
-#endif // DLGSERVERPROPERTIES_H
+#endif // DLGBROKERPROPERTIES_H
