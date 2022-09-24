@@ -9,7 +9,7 @@ HEADERS += \
     $$PWD/dlgselectroles.h \
     $$PWD/rolestreemodel/rolestreemodel.h \
     $$PWD/mainwindow.h \
-    $$PWD/dlgserverproperties.h \
+	$$PWD/dlgbrokerproperties.h \
     $$PWD/theapp.h \
     $$PWD/servertreemodel/servertreemodel.h \
     $$PWD/attributesmodel/attributesmodel.h \
@@ -37,7 +37,7 @@ SOURCES += \
     $$PWD/dlgselectroles.cpp \
     $$PWD/main.cpp\
     $$PWD/mainwindow.cpp \
-    $$PWD/dlgserverproperties.cpp \
+	$$PWD/dlgbrokerproperties.cpp \
     $$PWD/accessmodel/accessmodel.cpp \
     $$PWD/rolestreemodel/rolestreemodel.cpp \
     $$PWD/theapp.cpp \
@@ -64,7 +64,7 @@ FORMS += \
     $$PWD/dlgroleseditor.ui \
     $$PWD/dlgselectroles.ui \
     $$PWD/mainwindow.ui \
-    $$PWD/dlgserverproperties.ui \
+	$$PWD/dlgbrokerproperties.ui \
     $$PWD/dlgsubscriptionparameters.ui \
     $$PWD/methodparametersdialog.ui \
     $$PWD/texteditdialog.ui \
