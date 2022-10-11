@@ -96,9 +96,9 @@ jobs:
 
     - name: Build
       run: |
-        qmake.exe shvspy.pro -spec win32-g++ "CONFIG+=release"
-        mingw32-make.exe qmake_all
+        cmake.exe -G "MinGW Makefiles" -DWITH_SHV_WEBSOCKETS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. .
         mingw32-make.exe -j4
+        mingw32-make.exe install
       shell: cmd
 
     - name: Get app version
