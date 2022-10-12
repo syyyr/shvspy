@@ -36,6 +36,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic ${CMAKE_CXX_FLAGS}")
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_WIN32_EXECUTABLE ON) # Don't open a console window for Windows apps on Release mode.
+endif()
+
 add_subdirectory(3rdparty/necrolog)
 add_subdirectory(3rdparty/libshv)
 
