@@ -96,20 +96,10 @@ jobs:
 
     - name: Build
       run: |
-        qmake.exe shvspy.pro -spec win32-g++ "CONFIG+=release"
-        mingw32-make.exe qmake_all
+        cmake.exe -G "MinGW Makefiles" -DWITH_SHV_WEBSOCKETS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. .
         mingw32-make.exe -j4
+        mingw32-make.exe install
       shell: cmd
-
-    - name: Install language files
-      run: |
-        TRANS_DIR=bin/translations
-        mkdir -p $TRANS_DIR
-        for tsfile in `find . -name "*.ts"` ; do
-          qmfile=`basename "${tsfile%.*}.qm"`
-          echo "$QT_DIR/bin/lrelease $tsfile -qm $TRANS_DIR/$qmfile"
-          $Qt5_Dir/bin/lrelease $tsfile -qm $TRANS_DIR/$qmfile
-        done
 
     - name: Get app version
       run: echo "VERSION=`grep APP_VERSION shvspy/src/appversion.h | cut -d\\" -f2`" >> $GITHUB_ENV

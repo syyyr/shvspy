@@ -116,12 +116,10 @@ echo NO_CLEAN: $NO_CLEAN
 
 if [ -z $USE_SYSTEM_QT ]; then
 	QT_LIB_DIR=$QT_DIR/lib
-	QMAKE=$QT_DIR/bin/qmake
 	DISTRO_NAME=$APP_NAME-$APP_VER-linux64
 else
 	QT_DIR=/usr/lib/i386-linux-gnu/qt5
 	QT_LIB_DIR=/usr/lib/i386-linux-gnu
-	QMAKE=/usr/bin/qmake
 	DISTRO_NAME=$APP_NAME-$APP_VER-linux32
 fi
 
@@ -140,8 +138,13 @@ fi
 
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
-$QMAKE $SRC_DIR/shvspy.pro CONFIG+=release -r -spec linux-g++
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. ../..
 make -j2
+if [ $? -ne 0 ]; then
+	echo "Make Error" >&2
+	exit 1
+fi
+make install
 if [ $? -ne 0 ]; then
 	echo "Make Error" >&2
 	exit 1
@@ -191,15 +194,6 @@ $RSYNC $QT_DIR/plugins/audio/ $DIST_BIN_DIR/audio/
 
 mkdir -p $DIST_QML_DIR
 $RSYNC $QT_DIR/qml/QtQml $DIST_BIN_DIR/
-
-# process translation files
-TRANS_DIR=$DIST_BIN_DIR/translations
-mkdir -p $TRANS_DIR
-for tsfile in `/usr/bin/find $SRC_DIR -name "*.ts"` ; do
-	qmfile=`basename "${tsfile%.*}.qm"`
-	echo "$QT_DIR/bin/lrelease $tsfile -qm $TRANS_DIR/$qmfile"
-	$QT_DIR/bin/lrelease $tsfile -qm $TRANS_DIR/$qmfile
-done
 
 ARTIFACTS_DIR=$WORK_DIR/artifacts
 mkdir -p $ARTIFACTS_DIR
