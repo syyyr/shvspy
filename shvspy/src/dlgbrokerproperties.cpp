@@ -36,19 +36,10 @@ DlgBrokerProperties::DlgBrokerProperties(QWidget *parent) :
 
 	ui->cbxConnectionType->addItem(tr("Client"), "client");
 	ui->cbxConnectionType->addItem(tr("Device"), "device");
-	/*
-	connect(ui->cbxScheme, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int ix) {
-		bool is_socket = ix < 3;
-		ui->edPort->setEnabled(is_socket);
-		ui->edUser->setEnabled(is_socket);
-		ui->edPassword->setEnabled(is_socket);
-		ui->lstSecurityType->setEnabled(is_socket);
-		ui->chkPeerVerify->setEnabled(is_socket);
-	});
-	*/
 	connect(ui->cbxConnectionType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int ix) {
 		ui->grpDevice->setEnabled(ix == 1);
 	});
+	ui->grpDevice->setEnabled(false);
 
 	ui->cbxConnectionType->setCurrentIndex(0);
 

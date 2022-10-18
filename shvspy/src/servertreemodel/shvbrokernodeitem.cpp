@@ -366,23 +366,31 @@ void ShvBrokerNodeItem::onRpcMessageReceived(const shv::chainpack::RpcMessage &m
 			do {
 				const auto shv_path = rq.shvPath().asString();
 				const auto method = rq.method().asString();
-				if(shv_path == shv::chainpack::Rpc::DIR_BROKER_APP
-						&& method == cp::Rpc::METH_PING) {
+				if(shv_path == shv::chainpack::Rpc::DIR_BROKER_APP) {
 						resp.setResult(true);
 						break;
 				}
 				else if(shv_path.empty()) {
 					if(method == cp::Rpc::METH_DIR) {
+						using namespace shv::chainpack;
 						resp.setResult(cp::RpcValue::List{
-										   cp::Rpc::METH_DIR,
-										   //cp::Rpc::METH_PING,
-										   cp::Rpc::METH_APP_NAME,
-										   //cp::Rpc::METH_CONNECTION_TYPE,
+										   MetaMethod(Rpc::METH_DIR, MetaMethod::Signature::RetParam, MetaMethod::Flag::None).toRpcValue(),
+										   MetaMethod(Rpc::METH_APP_NAME, MetaMethod::Signature::RetVoid, MetaMethod::Flag::IsGetter).toRpcValue(),
+										   MetaMethod(Rpc::METH_APP_VERSION, MetaMethod::Signature::RetVoid, MetaMethod::Flag::IsGetter).toRpcValue(),
+										   MetaMethod(Rpc::METH_ECHO, MetaMethod::Signature::RetParam, MetaMethod::Flag::None, Rpc::ROLE_WRITE).toRpcValue(),
 									   });
 						break;
 					}
 					else if(method == cp::Rpc::METH_APP_NAME) {
 						resp.setResult(QCoreApplication::instance()->applicationName().toStdString());
+						break;
+					}
+					else if(method == cp::Rpc::METH_APP_VERSION) {
+						resp.setResult(QCoreApplication::instance()->applicationVersion().toStdString());
+						break;
+					}
+					else if(method == cp::Rpc::METH_ECHO) {
+						resp.setResult(rq.params());
 						break;
 					}
 				}
