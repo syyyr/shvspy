@@ -10,7 +10,6 @@ add_executable(shvspy
     src/dlgroleseditor.cpp
     src/dlgselectroles.cpp
     src/dlgsubscriptionparameters.cpp
-#    src/dlgsubscriptions.cpp
     src/dlguserseditor.cpp
     src/log/rpcnotificationsmodel.cpp
     src/methodparametersdialog.cpp
@@ -31,8 +30,6 @@ add_executable(shvspy
     shvspy.qrc
     config/config.qrc
 )
-
-# set_translations(shvspy "${PROJECT_TRANSLATIONS}")
 
 target_link_libraries(shvspy PRIVATE libshvvisu)
 
