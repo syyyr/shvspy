@@ -14,14 +14,26 @@ endif()
 add_subdirectory(3rdparty/necrolog)
 add_subdirectory(3rdparty/libshv)
 
-find_package(Qt5 QUIET COMPONENTS Core Widgets Gui Network Svg SerialPort )
+if(USE_QT6)
+    find_package(Qt6 COMPONENTS Core Widgets Gui Network Svg SerialPort)
+    set(Qt_FOUND ${Qt6_FOUND})
+else()
+    find_package(Qt5 QUIET COMPONENTS Core Widgets Gui Network Svg SerialPort)
+    set(Qt_FOUND ${Qt5_FOUND})
 
-if(Qt5_FOUND)
+    # Qt5 doesn't have add qt_add_executable so this is a polyfill for that, since we already support Qt6.
+    function(qt_add_executable)
+        add_executable(${ARGV})
+    endfunction()
+endif()
+
+
+if(Qt_FOUND)
     set(CMAKE_AUTOMOC ON)
     set(CMAKE_AUTOUIC ON)
     set(CMAKE_AUTORCC ON)
 
     add_subdirectory(shvspy)
 else()
-    message(FATAL_ERROR "Qt5 not found")
+    message(FATAL_ERROR "Qt${QT_VERSION_MAJOR} not found")
 endif()
