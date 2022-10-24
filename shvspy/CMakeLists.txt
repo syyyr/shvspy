@@ -1,4 +1,4 @@
-add_executable(shvspy
+qt_add_executable(shvspy
     src/accessmodel/accessitemdelegate.cpp
     src/accessmodel/accessmodel.cpp
     src/attributesmodel/attributesmodel.cpp

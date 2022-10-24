@@ -11,11 +11,20 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CMAKE_WIN32_EXECUTABLE ON) # Don't open a console window for Windows apps on Release mode.
 endif()
 
+if(EMSCRIPTEN)
+    add_link_options("-sASYNCIFY")
+    add_link_options("-Os")
+endif()
+
 add_subdirectory(3rdparty/necrolog)
 add_subdirectory(3rdparty/libshv)
 
 if(USE_QT6)
-    find_package(Qt6 COMPONENTS Core Widgets Gui Network Svg SerialPort)
+    if(EMSCRIPTEN)
+        find_package(Qt6 COMPONENTS Core Widgets Gui Network Svg)
+    else()
+        find_package(Qt6 COMPONENTS Core Widgets Gui Network Svg SerialPort)
+    endif()
     set(Qt_FOUND ${Qt6_FOUND})
 else()
     find_package(Qt5 QUIET COMPONENTS Core Widgets Gui Network Svg SerialPort)
