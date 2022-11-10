@@ -221,9 +221,15 @@ shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 				opts.setHeartBeatInterval(v.toInt());
 		}
 		{
+			// obsolete otion
 			QVariant v = m_brokerPropeties.value("rpc.defaultRpcTimeout");
 			if(v.isValid())
-				opts.setDefaultRpcTimeout(v.toInt());
+				opts.setRpcTimeout(v.toInt());
+		}
+		{
+			QVariant v = m_brokerPropeties.value("rpc.rpcTimeout");
+			if(v.isValid())
+				opts.setRpcTimeout(v.toInt());
 		}
 		{
 			QString dev_id = m_brokerPropeties.value("device.id").toString();
