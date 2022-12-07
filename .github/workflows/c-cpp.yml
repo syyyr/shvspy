@@ -28,6 +28,9 @@ jobs:
         version: '5.15.0'
         host: 'linux'
 
+    - name: Install fuse
+      run: sudo apt-get install -y libfuse-dev
+      
     - name: Get app version
       run: | 
         echo "VERSION=`grep APP_VERSION shvspy/src/appversion.h | cut -d\\" -f2`" >> $GITHUB_ENV
