@@ -6,7 +6,7 @@
 #include "servertreemodel/shvbrokernodeitem.h"
 #include "log/rpcnotificationsmodel.h"
 #include "dlgbrokerproperties.h"
-#include "dlgsubscriptionparameters.h"
+//#include "dlgsubscriptionparameters.h"
 #include "dlgcallshvmethod.h"
 #include "dlguserseditor.h"
 #include "dlgroleseditor.h"
@@ -24,7 +24,7 @@
 
 #include <shv/coreqt/log.h>
 
-#include <shv/iotqt/rpc/rpc.h>
+#include <shv/coreqt/rpc.h>
 
 #include <QSettings>
 #include <QMessageBox>

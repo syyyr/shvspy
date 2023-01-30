@@ -1,6 +1,6 @@
 #include "attributesmodel.h"
 
-#include "../theapp.h"
+//#include "../theapp.h"
 #include "../servertreemodel/shvnodeitem.h"
 
 #include <shv/chainpack/cponreader.h>
@@ -10,7 +10,7 @@
 #include <shv/core/assert.h>
 #include <shv/coreqt/log.h>
 #include <shv/iotqt/rpc/clientconnection.h>
-#include <shv/iotqt/rpc/rpc.h>
+#include <shv/coreqt/rpc.h>
 
 #include <QSettings>
 #include <QJsonDocument>
