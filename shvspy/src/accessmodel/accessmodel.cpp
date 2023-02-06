@@ -54,7 +54,7 @@ shv::chainpack::RpcValue AccessModel::rules()
 int AccessModel::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent)
-	return m_rules.size();
+	return static_cast<int>(m_rules.size());
 }
 
 int AccessModel::columnCount(const QModelIndex &parent) const
@@ -76,7 +76,7 @@ Qt::ItemFlags AccessModel::flags(const QModelIndex &ix) const
 
 QVariant AccessModel::data(const QModelIndex &ix, int role) const
 {
-	if (m_rules.empty() || ix.row() >= (int)m_rules.size() || ix.row() < 0){
+	if (m_rules.empty() || ix.row() >= static_cast<int>(m_rules.size()) || ix.row() < 0){
 		return QVariant();
 	}
 
@@ -114,7 +114,7 @@ QVariant AccessModel::data(const QModelIndex &ix, int role) const
 
 bool AccessModel::setData(const QModelIndex &ix, const QVariant &val, int role)
 {
-	if (m_rules.empty() || ix.row() >= (int)m_rules.size() || ix.row() < 0)
+	if (m_rules.empty() || ix.row() >= static_cast<int>(m_rules.size()) || ix.row() < 0)
 		return false;
 
 	if (role == Qt::EditRole){

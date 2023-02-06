@@ -24,7 +24,7 @@ DlgRolesEditor::DlgRolesEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	static QStringList INFO_HEADER_NAMES {{ tr("Role") }};
 
 	m_dataModel = new QStandardItemModel(this);
-	m_dataModel->setColumnCount(INFO_HEADER_NAMES.count());
+	m_dataModel->setColumnCount(static_cast<int>(INFO_HEADER_NAMES.count()));
 	m_dataModel->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
 
 	m_modelProxy = new QSortFilterProxyModel(this);
@@ -33,7 +33,7 @@ DlgRolesEditor::DlgRolesEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	ui->twRoles->setModel(m_modelProxy);
 
 	ui->twRoles->horizontalHeader()->setStretchLastSection(true);
-	ui->twRoles->verticalHeader()->setDefaultSectionSize(ui->twRoles->fontMetrics().height() * ROW_HEIGHT_RATIO);
+	ui->twRoles->verticalHeader()->setDefaultSectionSize(static_cast<int>(ui->twRoles->fontMetrics().height() * ROW_HEIGHT_RATIO));
 	ui->twRoles->verticalHeader()->setVisible(false);
 
 	connect(ui->pbAddRole, &QPushButton::clicked, this, &DlgRolesEditor::onAddRoleClicked);
@@ -110,7 +110,7 @@ void DlgRolesEditor::onDeleteRoleClicked()
 			}
 		});
 
-		shv::chainpack::RpcValue::List params{shv::chainpack::RpcValue::String(role), {}};
+		shv::chainpack::RpcValue::List params{role, {}};
 		m_rpcConnection->callShvMethod(rqid, aclEtcRolesNodePath(), SET_VALUE_METHOD, params);
 	}
 }
@@ -158,11 +158,11 @@ void DlgRolesEditor::listRoles()
 			else{
 				if (response.result().isList()){
 					shv::chainpack::RpcValue::List res = response.result().toList();
-					m_dataModel->setRowCount(res.size());
+					m_dataModel->setRowCount(static_cast<int>(res.size()));
 					for (size_t i = 0; i < res.size(); i++){
 						QStandardItem *item = new QStandardItem(QString::fromStdString(res.at(i).toStdString()));
 						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						m_dataModel->setItem(i, 0, item);
+						m_dataModel->setItem(static_cast<int>(i), 0, item);
 					}
 				}
 				setStatusText(QString());

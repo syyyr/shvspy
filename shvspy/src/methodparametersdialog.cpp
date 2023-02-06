@@ -65,7 +65,7 @@ MethodParametersDialog::MethodParametersDialog(const QString &path, const QStrin
 	m_singleTypeCombo = new QComboBox(this);
 	ui->singleParameterTable->setCellWidget(0, 0, m_singleTypeCombo);
 	for (cp::RpcValue::Type t : m_supportedTypes) {
-		m_singleTypeCombo->addItem(cp::RpcValue::typeToName(t), (int)t);
+		m_singleTypeCombo->addItem(cp::RpcValue::typeToName(t), static_cast<int>(t));
 	}
 	m_singleValueGetters << ValueGetter();
 	m_singleValueSetters << ValueSetter();
@@ -117,7 +117,7 @@ cp::RpcValue MethodParametersDialog::value() const
 
 void MethodParametersDialog::newSingleParameter(const shv::chainpack::RpcValue &param)
 {
-	cp::RpcValue::Type current_type = (cp::RpcValue::Type)m_singleTypeCombo->itemData(m_singleTypeCombo->currentIndex()).toInt();
+	cp::RpcValue::Type current_type = static_cast<cp::RpcValue::Type>(m_singleTypeCombo->itemData(m_singleTypeCombo->currentIndex()).toInt());
 	cp::RpcValue::Type requested_type;
 	if (param.isValid()) {
 		requested_type = param.type();
@@ -127,7 +127,7 @@ void MethodParametersDialog::newSingleParameter(const shv::chainpack::RpcValue &
 	}
 	if (current_type != requested_type) {
 		disconnect(m_singleTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MethodParametersDialog::onSingleTypeChanged);
-		int index = m_supportedTypes.indexOf(requested_type);
+		auto index = static_cast<int>(m_supportedTypes.indexOf(requested_type));
 		m_singleTypeCombo->setCurrentIndex(index);
 		switchByType(requested_type, ui->singleParameterTable, 0, 1, m_singleValueGetters, m_singleValueSetters);
 		connect(m_singleTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MethodParametersDialog::onSingleTypeChanged);
@@ -154,7 +154,7 @@ void MethodParametersDialog::newMapParameter(const QString &key, const cp::RpcVa
 	QComboBox *combo = new QComboBox(this);
 	ui->parameterMapTable->setCellWidget(row, 1, combo);
 	for (cp::RpcValue::Type t : m_supportedTypes) {
-		combo->addItem(cp::RpcValue::typeToName(t), (int)t);
+		combo->addItem(cp::RpcValue::typeToName(t), static_cast<int>(t));
 	}
 	m_mapValueGetters << ValueGetter();
 	m_mapValueSetters << ValueSetter();
@@ -162,18 +162,18 @@ void MethodParametersDialog::newMapParameter(const QString &key, const cp::RpcVa
 
 	if (param.isValid()) {
 		cp::RpcValue::Type t = param.type();
-		int index = m_supportedTypes.indexOf(t);
+		auto index = static_cast<int>(m_supportedTypes.indexOf(t));
 		combo->setCurrentIndex(index);
 		switchByType(t, ui->parameterMapTable, row, 2, m_mapValueGetters, m_mapValueSetters);
 		m_mapValueSetters[row](param);
 	}
 	else {
-		int index = m_supportedTypes.indexOf(cp::RpcValue::Type::String);
+		int index = static_cast<int>(m_supportedTypes.indexOf(cp::RpcValue::Type::String));
 		combo->setCurrentIndex(index);
 		switchToString(ui->parameterMapTable, row, 2, m_mapValueGetters, m_mapValueSetters);
 	}
 	connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, combo, row](int index) {
-		cp::RpcValue::Type t = (cp::RpcValue::Type)combo->itemData(index).toInt();
+		auto t = static_cast<cp::RpcValue::Type>(combo->itemData(index).toInt());
 		switchByType(t, ui->parameterMapTable, row, 2, m_mapValueGetters, m_mapValueSetters);
 	});
 }
@@ -186,7 +186,7 @@ void MethodParametersDialog::newListParameter(const cp::RpcValue &param)
 	QComboBox *combo = new QComboBox(this);
 	ui->parameterListTable->setCellWidget(row, 0, combo);
 	for (cp::RpcValue::Type t : m_supportedTypes) {
-		combo->addItem(cp::RpcValue::typeToName(t), (int)t);
+		combo->addItem(cp::RpcValue::typeToName(t), static_cast<int>(t));
 	}
 	m_listValueGetters << ValueGetter();
 	m_listValueSetters << ValueSetter();
@@ -194,18 +194,18 @@ void MethodParametersDialog::newListParameter(const cp::RpcValue &param)
 
 	if (param.isValid()) {
 		cp::RpcValue::Type t = param.type();
-		int index = m_supportedTypes.indexOf(t);
+		auto index = static_cast<int>(m_supportedTypes.indexOf(t));
 		combo->setCurrentIndex(index);
 		switchByType(t, ui->parameterListTable, row, 1, m_listValueGetters, m_listValueSetters);
 		m_listValueSetters[row](param);
 	}
 	else {
-		int index = m_supportedTypes.indexOf(cp::RpcValue::Type::String);
+		auto index = static_cast<int>(m_supportedTypes.indexOf(cp::RpcValue::Type::String));
 		combo->setCurrentIndex(index);
 		switchToString(ui->parameterListTable, row, 1, m_listValueGetters, m_listValueSetters);
 	}
 	connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), [this, combo, row](int index) {
-		cp::RpcValue::Type t = (cp::RpcValue::Type)combo->itemData(index).toInt();
+		auto t = static_cast<cp::RpcValue::Type>(combo->itemData(index).toInt());
 		switchByType(t, ui->parameterListTable, row, 1, m_listValueGetters, m_listValueSetters);
 	});
 }
@@ -224,7 +224,7 @@ void MethodParametersDialog::onMapCurrentCellChanged(int row, int col)
 
 void MethodParametersDialog::onSingleTypeChanged(int type)
 {
-	cp::RpcValue::Type t = (cp::RpcValue::Type)m_singleTypeCombo->itemData(type).toInt();
+	auto t = static_cast<cp::RpcValue::Type>(m_singleTypeCombo->itemData(type).toInt());
 	switchByType(t, ui->singleParameterTable, 0, 1, m_singleValueGetters, m_singleValueSetters);
 }
 

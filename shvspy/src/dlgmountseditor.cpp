@@ -24,7 +24,7 @@ DlgMountsEditor::DlgMountsEditor(QWidget *parent, shv::iotqt::rpc::ClientConnect
 	static QStringList INFO_HEADER_NAMES { tr("Device ID"), tr("Mount point"), tr("Description") };
 
 	m_dataModel = new QStandardItemModel(this);
-	m_dataModel->setColumnCount(INFO_HEADER_NAMES.count());
+	m_dataModel->setColumnCount(static_cast<int>(INFO_HEADER_NAMES.count()));
 	m_dataModel->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
 
 	m_modelProxy = new QSortFilterProxyModel(this);
@@ -34,7 +34,7 @@ DlgMountsEditor::DlgMountsEditor(QWidget *parent, shv::iotqt::rpc::ClientConnect
 	ui->twMounts->setModel(m_modelProxy);
 
 	ui->twMounts->horizontalHeader()->setStretchLastSection(true);
-	ui->twMounts->verticalHeader()->setDefaultSectionSize(ui->twMounts->fontMetrics().height() * ROW_HEIGHT_RATIO);
+	ui->twMounts->verticalHeader()->setDefaultSectionSize(static_cast<int>(ui->twMounts->fontMetrics().height() * ROW_HEIGHT_RATIO));
 	ui->twMounts->verticalHeader()->setVisible(false);
 	ui->twMounts->setSelectionBehavior(QAbstractItemView::SelectRows);
 
@@ -111,7 +111,7 @@ void DlgMountsEditor::onDeleteMountClicked()
 			}
 		});
 
-		shv::chainpack::RpcValue::List params{shv::chainpack::RpcValue::String(mount), {}};
+		shv::chainpack::RpcValue::List params{mount, {}};
 		m_rpcConnection->callShvMethod(rqid, aclEtcMountsNodePath(), METHOD_SET_VALUE, params);
 	}
 }
@@ -149,7 +149,7 @@ void DlgMountsEditor::onRpcCallsFinished()
 	ui->leFilter->setEnabled(true);
 	setStatusText(QString());
 
-	m_dataModel->setRowCount(m_mountPoints.count());
+	m_dataModel->setRowCount(static_cast<int>(m_mountPoints.count()));
 	int i = 0;
 	for (const MountPointInfo &info : m_mountPoints) {
 		QStandardItem *id_item = new QStandardItem(info.id);
