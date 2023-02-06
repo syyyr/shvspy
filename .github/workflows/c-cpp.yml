@@ -58,61 +58,57 @@ jobs:
 
 
   build_windows:
-    runs-on: windows-2019
+    runs-on: windows-2022
     defaults:
       run:
         shell: bash
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
 
-    - name: Cache Libs
-      id: cache-libs
-      uses: actions/cache@v2
-      with:
-        path: |
-          C:/msys64/mingw64/bin/libiconv-2.dll
-          C:/msys64/mingw64/bin/libintl-8.dll
-          C:/msys64/mingw64/bin/libxml2-2.dll
-          C:/msys64/mingw64/bin/liblzma-5.dll
-          C:/msys64/mingw64/bin/zlib1.dll
-        key: ${{ runner.os }}-Libraries
+      - name: Cache Libs
+        id: cache-libs
+        uses: actions/cache@v2
+        with:
+          path: |
+            C:/msys64/mingw64/bin/libiconv-2.dll
+            C:/msys64/mingw64/bin/libintl-8.dll
+            C:/msys64/mingw64/bin/libxml2-2.dll
+            C:/msys64/mingw64/bin/liblzma-5.dll
+            C:/msys64/mingw64/bin/zlib1.dll
+          key: ${{ runner.os }}-Libraries
 
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v2
-      with:
-        path: ${{ runner.workspace }}\Qt
-        key: ${{ runner.os }}-Qt
- 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-      with:
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
-        version: '5.15.0'
-        host: 'windows'
-        arch: 'win64_mingw81' 
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          cache: true
+          install-deps: false
+          version: 6.4.2
+          modules: qtserialport qtwebsockets qtmultimedia
+          host: 'windows'
+          arch: 'win64_mingw'
 
-    - name: Build
-      run: |
-        cmake.exe -G "MinGW Makefiles" -DWITH_SHV_WEBSOCKETS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. .
-        mingw32-make.exe -j4
-        mingw32-make.exe install
-      shell: cmd
+      - name: Build
+        run: |
+          cmake.exe -G "MinGW Makefiles" -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. .
+          mingw32-make.exe -j4
+          mingw32-make.exe install
+        shell: cmd
 
-    - name: Get app version
-      run: echo "VERSION=`grep APP_VERSION shvspy/src/appversion.h | cut -d\\" -f2`" >> $GITHUB_ENV
+      - name: Get app version
+        run: |
+          echo "VERSION=$(grep APP_VERSION shvspy/src/appversion.h | cut -d\" -f2)" >> "$GITHUB_ENV"
 
-    - name: Create installer
-      run: |
-        choco upgrade innosetup --no-progress
-        "C:\Program Files (x86)\Inno Setup 6\iscc.exe" "/DVERSION=%VERSION%" "/DQT_DIR=%Qt5_Dir%"  shvspy/shvspy.iss
-      shell: cmd
+      - name: Create installer
+        run: |
+          choco upgrade innosetup --no-progress
+          "C:\Program Files (x86)\Inno Setup 6\iscc.exe" "/DVERSION=%VERSION%" "/DQT_DIR=%Qt6_Dir%"  shvspy/shvspy.iss
+        shell: cmd
 
-    - name: Save setup
-      uses: actions/upload-artifact@v2
-      with:
-        name: shvspy-elektroline-${{ env.VERSION }}-setup.exe
-        path: _inno\shvspy\shvspy-elektroline-${{ env.VERSION }}-setup.exe
+      - name: Save setup
+        uses: actions/upload-artifact@v2
+        with:
+          name: shvspy-elektroline-${{ env.VERSION }}-setup.exe
+          path: _inno\shvspy\shvspy-elektroline-${{ env.VERSION }}-setup.exe

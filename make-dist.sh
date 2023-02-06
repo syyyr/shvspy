@@ -138,7 +138,7 @@ fi
 
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
-CFLAGS="-Werror" CXXFLAGS="-Werror" cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. ../..
+CFLAGS="-Werror" CXXFLAGS="-Werror" cmake -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. ../..
 make -j2
 if [ $? -ne 0 ]; then
 	echo "Make Error" >&2
