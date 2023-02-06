@@ -45,7 +45,7 @@ DlgAddEditUser::~DlgAddEditUser()
 static std::string sha1_hex(const std::string &s)
 {
 	QCryptographicHash hash(QCryptographicHash::Algorithm::Sha1);
-	hash.addData(s.data(), s.length());
+	hash.addData(QByteArrayView(s.data(), s.length()));
 	return std::string(hash.result().toHex().constData());
 }
 
