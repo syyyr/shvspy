@@ -131,6 +131,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->btLogInspector, &QPushButton::clicked, this, &MainWindow::openLogInspector);
 
 	ui->notificationsLogWidget->setLogTableModel(TheApp::instance()->rpcNotificationsModel());
+	connect(ui->notificationsLogWidget->tableView(), &QTableView::doubleClicked, this, &MainWindow::onNotificationsDoubleClicked);
 	ui->errorLogWidget->setLogTableModel(TheApp::instance()->errorLogModel());
 
 	checkSettingsReady();
@@ -391,9 +392,12 @@ void MainWindow::openNode(const QModelIndex &ix)
 
 void MainWindow::displayResult(const QModelIndex &ix)
 {
-	//QApplication::setOverrideCursor(Qt::WaitCursor);
-	QVariant v = ix.data(AttributesModel::RpcValueRole);
-	cp::RpcValue rv = qvariant_cast<cp::RpcValue>(v);
+	cp::RpcValue rv = qvariant_cast<cp::RpcValue>(ix.data(AttributesModel::RpcValueRole));
+	displayValue(rv);
+}
+
+void MainWindow::displayValue(const shv::chainpack::RpcValue &rv)
+{
 	if(rv.isString() || rv.isBlob()) {
 		TextEditDialog *view = new TextEditDialog(this);
 		view->setModal(false);
@@ -564,6 +568,15 @@ void MainWindow::onAttributesTableContextMenu(const QPoint &point)
 		else if (a == a_cpon_ed) {
 			editCponParameters(index);
 		}
+	}
+}
+
+void MainWindow::onNotificationsDoubleClicked(const QModelIndex &ix)
+{
+	if (ix.column() == RpcNotificationsModel::Columns::ColParams) {
+		auto data = TheApp::instance()->rpcNotificationsModel()->data(ix, Qt::DisplayRole);
+		cp::RpcValue v = cp::RpcValue::fromCpon(data.toString().toStdString());
+		displayValue(v);
 	}
 }
 

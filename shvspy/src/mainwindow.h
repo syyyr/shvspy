@@ -12,6 +12,8 @@ class QStandardItemModel;
 
 class ShvBrokerNodeItem;
 
+namespace shv::chainpack { class RpcValue; }
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -39,11 +41,13 @@ protected:
 	void editServer(ShvBrokerNodeItem *srv, bool copy_server);
 	void openNode(const QModelIndex &ix);
 	void displayResult(const QModelIndex &ix);
+	void displayValue(const shv::chainpack::RpcValue &rv);
 	void editMethodParameters(const QModelIndex &ix);
 	void editStringParameter(const QModelIndex &ix);
 	void editCponParameters(const QModelIndex &ix);
 
 	void onAttributesTableContextMenu(const QPoint &point);
+	void onNotificationsDoubleClicked(const QModelIndex &ix);
 
 	void closeEvent(QCloseEvent *ev) Q_DECL_OVERRIDE;
 	void saveSettings();
