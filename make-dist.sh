@@ -138,7 +138,7 @@ fi
 
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. ../..
+CFLAGS="-Werror" CXXFLAGS="-Werror" cmake -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$QT_DIR" -DCMAKE_INSTALL_PREFIX=. ../..
 make -j2
 if [ $? -ne 0 ]; then
 	echo "Make Error" >&2
@@ -159,27 +159,45 @@ RSYNC='rsync -av --exclude *.debug'
 $RSYNC $BUILD_DIR/lib/ $DIST_LIB_DIR
 $RSYNC $BUILD_DIR/bin/ $DIST_BIN_DIR
 
-$RSYNC $QT_LIB_DIR/libQt5Core.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Gui.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Widgets.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5XmlPatterns.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Network.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Sql.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Xml.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Qml.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Quick.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5QmlModels.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Svg.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5PrintSupport.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5SerialPort.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5DBus.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Multimedia.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5XcbQpa.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Core.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Gui.so* $DIST_LIB_DIR
+
+$RSYNC $QT_LIB_DIR/libQt6QuickWidgets.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Location.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6PositioningQuick.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Positioning.so* $DIST_LIB_DIR
+
+$RSYNC $QT_LIB_DIR/libQt6Widgets.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6XmlPatterns.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Network.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6WebSockets.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Sql.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Xml.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Qml.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Quick.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6QuickControls2.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6QuickTemplates2.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6QmlWorkerScript.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6QmlModels.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Svg.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Script.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6ScriptTools.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6PrintSupport.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6SerialPort.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6DBus.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6Multimedia.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6XcbQpa.so* $DIST_LIB_DIR
+$RSYNC $QT_LIB_DIR/libQt6WebSockets.so* $DIST_LIB_DIR
+
+$RSYNC $QT_LIB_DIR/libQt6OpcUa.so* $DIST_LIB_DIR
+
+$RSYNC $QT_LIB_DIR/libQt6Mqtt.so* $DIST_LIB_DIR
 
 $RSYNC $QT_LIB_DIR/libicu*.so* $DIST_LIB_DIR
 
 $RSYNC $QT_DIR/plugins/platforms/ $DIST_BIN_DIR/platforms
 $RSYNC $QT_DIR/plugins/printsupport/ $DIST_BIN_DIR/printsupport
+$RSYNC $QT_DIR/plugins/geoservices/ $DIST_BIN_DIR/geoservices
 
 mkdir -p $DIST_BIN_DIR/imageformats
 $RSYNC $QT_DIR/plugins/imageformats/libqjpeg.so $DIST_BIN_DIR/imageformats/
@@ -193,7 +211,10 @@ mkdir -p $DIST_BIN_DIR/audio
 $RSYNC $QT_DIR/plugins/audio/ $DIST_BIN_DIR/audio/
 
 mkdir -p $DIST_QML_DIR
-$RSYNC $QT_DIR/qml/QtQml $DIST_BIN_DIR/
+$RSYNC $QT_DIR/qml/QtLocation $DIST_QML_DIR/
+$RSYNC $QT_DIR/qml/QtPositioning $DIST_QML_DIR/
+$RSYNC $QT_DIR/qml/QtQuick $DIST_QML_DIR/
+$RSYNC $QT_DIR/qml/QtQuick.2 $DIST_QML_DIR/
 
 ARTIFACTS_DIR=$WORK_DIR/artifacts
 mkdir -p $ARTIFACTS_DIR

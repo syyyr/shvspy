@@ -28,7 +28,7 @@ DlgAddEditRole::DlgAddEditRole(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	ui->tvAccessRules->setModel(&m_accessModel);
 	ui->tvAccessRules->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 	ui->tvAccessRules->verticalHeader()->setDefaultSectionSize(static_cast<int>(fontMetrics().height() * 1.3));
-	ui->tvAccessRules->setColumnWidth(AccessModel::Columns::ColPath, frameGeometry().width() * 0.6);
+	ui->tvAccessRules->setColumnWidth(AccessModel::Columns::ColPath, static_cast<int>(frameGeometry().width() * 0.6));
 
 	AccessItemDelegate *del = new AccessItemDelegate(ui->tvAccessRules);
 	ui->tvAccessRules->setItemDelegate(del);

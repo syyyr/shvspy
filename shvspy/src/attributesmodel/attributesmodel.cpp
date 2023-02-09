@@ -33,7 +33,7 @@ int AttributesModel::rowCount(const QModelIndex &parent) const
 	Q_UNUSED(parent)
 	if(m_shvTreeNodeItem.isNull())
 		return 0;
-	return m_shvTreeNodeItem->methods().count();
+	return static_cast<int>(m_shvTreeNodeItem->methods().count());
 }
 
 Qt::ItemFlags AttributesModel::flags(const QModelIndex &ix) const
@@ -138,11 +138,11 @@ QVariant AttributesModel::data(const QModelIndex &ix, int role) const
 			return data(ix, Qt::DisplayRole);
 		}
 		else if(ix.column() == ColFlags) {
-			bool is_notify = m_rows[(unsigned)ix.row()][ColFlags].toUInt() & cp::MetaMethod::Flag::IsSignal;
+			bool is_notify = m_rows[static_cast<unsigned>(ix.row())][ColFlags].toUInt() & cp::MetaMethod::Flag::IsSignal;
 			return is_notify? tr("Method is notify signal"): QVariant();
 		}
 		else if(ix.column() == ColMethodName) {
-			auto attrs = m_rows[(unsigned)ix.row()][ColAttributes].asMap();
+			auto attrs = m_rows[static_cast<unsigned>(ix.row())][ColAttributes].asMap();
 			QStringList lines;
 			for(const auto &kv : attrs) {
 				lines << tr("%1: %2").arg(kv.first.c_str()).arg(kv.second.toCpon().c_str());
@@ -322,7 +322,7 @@ void AttributesModel::loadRows()
 			RowVals rv;
 			rv.resize(ColCnt);
 			m_rows.push_back(rv);
-			loadRow(m_rows.size() - 1);
+			loadRow(static_cast<unsigned>(m_rows.size() - 1));
 		}
 	}
 	emit layoutChanged();

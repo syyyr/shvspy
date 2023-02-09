@@ -203,9 +203,9 @@ shv::iotqt::rpc::ClientConnection *ShvBrokerNodeItem::clientConnection()
 		shv::iotqt::rpc::DeviceAppCliOptions opts;
 		{
 			int proto_type = m_brokerPropeties.value("rpc.protocolType").toInt();
-			if(proto_type == (int)cp::Rpc::ProtocolType::JsonRpc)
+			if(proto_type == static_cast<int>(cp::Rpc::ProtocolType::JsonRpc))
 				opts.setProtocolType("jsonrpc");
-			else if(proto_type == (int)cp::Rpc::ProtocolType::Cpon)
+			else if(proto_type == static_cast<int>(cp::Rpc::ProtocolType::Cpon))
 				opts.setProtocolType("cpon");
 			else
 				opts.setProtocolType("chainpack");
@@ -297,7 +297,7 @@ ShvNodeItem* ShvBrokerNodeItem::findNode(const std::string &path_)
 	shv::core::StringViewList id_list = shv::core::utils::ShvPath::split(path);
 	for(const shv::core::StringView &node_id : id_list) {
 		int i;
-		int row_cnt = ret->childCount();
+		auto row_cnt = ret->childCount();
 		for (i = 0; i < row_cnt; ++i) {
 			ShvNodeItem *nd = ret->childAt(i);
 			if(nd && node_id == nd->nodeId()) {

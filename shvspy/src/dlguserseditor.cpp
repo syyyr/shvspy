@@ -30,7 +30,7 @@ DlgUsersEditor::DlgUsersEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	static QStringList INFO_HEADER_NAMES {{ tr("User") }};
 
 	m_dataModel = new QStandardItemModel(this);
-	m_dataModel->setColumnCount(INFO_HEADER_NAMES.count());
+	m_dataModel->setColumnCount(static_cast<int>(INFO_HEADER_NAMES.count()));
 	m_dataModel->setHorizontalHeaderLabels(INFO_HEADER_NAMES);
 
 	m_modelProxy = new QSortFilterProxyModel(this);
@@ -39,7 +39,7 @@ DlgUsersEditor::DlgUsersEditor(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 	ui->twUsers->setModel(m_modelProxy);
 
 	ui->twUsers->horizontalHeader()->setStretchLastSection(true);
-	ui->twUsers->verticalHeader()->setDefaultSectionSize(ui->twUsers->fontMetrics().height() * ROW_HEIGHT_RATIO);
+	ui->twUsers->verticalHeader()->setDefaultSectionSize(static_cast<int>(ui->twUsers->fontMetrics().height() * ROW_HEIGHT_RATIO));
 	ui->twUsers->verticalHeader()->setVisible(false);
 
 	m_rpcConnection = rpc_connection;
@@ -80,11 +80,11 @@ void DlgUsersEditor::listUsers()
 			else{
 				if (response.result().isList()){
 					shv::chainpack::RpcValue::List res = response.result().toList();
-					m_dataModel->setRowCount(res.size());
+					m_dataModel->setRowCount(static_cast<int>(res.size()));
 					for (size_t i = 0; i < res.size(); i++){
 						QStandardItem *item = new QStandardItem(QString::fromStdString(res.at(i).toStdString()));
 						item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-						m_dataModel->setItem(i, 0, item);
+						m_dataModel->setItem(static_cast<int>(i), 0, item);
 					}
 				}
 			}
@@ -139,7 +139,7 @@ void DlgUsersEditor::onDelUserClicked()
 			}
 		});
 
-		shv::chainpack::RpcValue::List params{shv::chainpack::RpcValue::String(user.toStdString()), {}};
+		shv::chainpack::RpcValue::List params{user.toStdString(), {}};
 		m_rpcConnection->callShvMethod(rqid, aclEtcUsersNodePath(), SET_VALUE_METHOD, params);
 	}
 }

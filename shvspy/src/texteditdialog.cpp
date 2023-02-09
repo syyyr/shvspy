@@ -61,7 +61,7 @@ void TextEditDialog::setReadOnly(bool ro)
 bool TextEditDialog::eventFilter(QObject *o, QEvent *e)
 {
 	if (e->type() == QEvent::KeyPress) {
-		QKeyEvent *ke = (QKeyEvent *)e;
+		auto *ke = static_cast<QKeyEvent *>(e);
 		if (o == ui->plainTextEdit || o == this) {
 			if ((ke->key() == Qt::Key_F && ke->modifiers() == Qt::CTRL) ||
 				(ke->key() == Qt::Key_Slash && ke->modifiers() == Qt::NoModifier && ui->plainTextEdit->isReadOnly())) {

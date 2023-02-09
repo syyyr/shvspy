@@ -62,20 +62,20 @@ Source: {#BUILD_DIR}\bin\libshvvisu.dll; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 #ifdef INCLUDE_QT
-Source: {#QT_DIR}\bin\Qt5Core.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Gui.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Widgets.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Network.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5SerialPort.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Svg.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Sql.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Multimedia.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\QT5multimediawidgets.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5OpenGL.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Core.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Gui.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Widgets.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Network.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6WebSockets.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Sql.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Xml.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Qml.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Svg.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6PrintSupport.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6SerialPort.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#QT_DIR}\bin\Qt6Multimedia.dll; DestDir: {app}; Flags: ignoreversion
 
-Source: {#QT_DIR}\plugins\mediaservice\dsengine.dll; DestDir: {app}\mediaservice; Flags: ignoreversion
 Source: {#QT_DIR}\plugins\platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
-Source: {#QT_DIR}\plugins\audio\qtaudio_windows.dll; DestDir: {app}\audio; Flags: ignoreversion
 Source: {#QT_DIR}\plugins\imageformats\qsvg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
 
 Source: {#QT_DIR}\bin\libgcc_s_seh-1.dll; DestDir: {app}; Flags: ignoreversion

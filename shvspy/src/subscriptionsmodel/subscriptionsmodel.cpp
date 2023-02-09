@@ -24,7 +24,7 @@ SubscriptionsModel::~SubscriptionsModel()
 int SubscriptionsModel::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent)
-	return m_subscriptions.count();
+	return static_cast<int>(m_subscriptions.count());
 }
 
 int SubscriptionsModel::columnCount(const QModelIndex &parent) const
@@ -220,7 +220,7 @@ void SubscriptionsModel::onBrokerConnectedChanged(int broker_id, bool is_connect
 	}
 	else{
 		QVariantList subs;
-		for (int i = m_subscriptions.size() -1; i >= 0; i--) {
+		for (auto i = m_subscriptions.size() -1; i >= 0; i--) {
 			if (m_subscriptions.at(i).brokerId() == broker_id){
 				m_subscriptions.removeAt(i);
 			}
@@ -234,7 +234,7 @@ void SubscriptionsModel::addSubscription(Subscription sub)
 	int sub_ix = subscriptionIndex(sub.brokerId(), sub.shvPath(), sub.method());
 
 	if (sub_ix == -1){
-		beginInsertRows(QModelIndex(), m_subscriptions.count(), m_subscriptions.count());
+		beginInsertRows(QModelIndex(), static_cast<int>(m_subscriptions.count()), static_cast<int>(m_subscriptions.count()));
 		m_subscriptions.append(sub);
 		endInsertRows();
 	}

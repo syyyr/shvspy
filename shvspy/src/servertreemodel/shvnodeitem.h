@@ -46,8 +46,8 @@ public:
 	ShvBrokerNodeItem* serverNode() const;
 	ShvNodeItem* parentNode() const;
 	ShvNodeItem* childAt(int ix) const;
-	int childCount() const {return m_children.count();}
-	void insertChild(int ix, ShvNodeItem *n);
+	qsizetype childCount() const {return m_children.count();}
+	void insertChild(qsizetype ix, ShvNodeItem *n);
 	void appendChild(ShvNodeItem *n) {insertChild(m_children.count(), n);}
 	void deleteChild(int ix);
 	void deleteChildren();

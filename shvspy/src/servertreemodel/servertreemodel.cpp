@@ -106,7 +106,7 @@ int ServerTreeModel::rowCount(const QModelIndex &parent) const
 	//shvDebug() << "ServerTreeModel::rowCount, item:" << par_it << "parent model index valid:" << parent.isValid();
 	//ShvNodeItem *par_nd = dynamic_cast<ShvNodeItem*>(par_it);
 	if(par_brnd || par_nd == invisibleRootItem()) {
-		return par_nd->childCount();
+		return static_cast<int>(par_nd->childCount());
 	}
 	if(par_nd) {
 		//if(par_nd->nodeId() == "localhost")
@@ -116,7 +116,7 @@ int ServerTreeModel::rowCount(const QModelIndex &parent) const
 			shvDebug() << "\t loading" << par_nd->shvPath();
 			par_nd->loadChildren();
 		}
-		return par_nd->childCount();
+		return static_cast<int>(par_nd->childCount());
 	}
 	return 0;
 }
@@ -144,7 +144,7 @@ ShvNodeItem *ServerTreeModel::itemFromIndex(const QModelIndex &ix) const
 {
 	if(!ix.isValid())
 		return m_invisibleRoot;
-	ShvNodeItem *nd = m_nodes.value(ix.internalId());
+	ShvNodeItem *nd = m_nodes.value(static_cast<unsigned>(ix.internalId()));
 	return nd;
 }
 

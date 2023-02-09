@@ -20,17 +20,17 @@ DlgBrokerProperties::DlgBrokerProperties(QWidget *parent) :
 		using namespace shv::iotqt::rpc;
 		using Scheme = Socket::Scheme;
 		auto *cbx = ui->cbxScheme;
-		cbx->addItem(Socket::schemeToString(Scheme::Tcp), (int)Scheme::Tcp);
-		cbx->addItem(Socket::schemeToString(Scheme::WebSocket), (int)Scheme::WebSocket);
-		cbx->addItem(Socket::schemeToString(Scheme::WebSocketSecure), (int)Scheme::WebSocketSecure);
-		cbx->addItem(Socket::schemeToString(Scheme::SerialPort), (int)Scheme::SerialPort);
-		cbx->addItem(Socket::schemeToString(Scheme::LocalSocket), (int)Scheme::LocalSocket);
+		cbx->addItem(Socket::schemeToString(Scheme::Tcp), static_cast<int>(Scheme::Tcp));
+		cbx->addItem(Socket::schemeToString(Scheme::WebSocket), static_cast<int>(Scheme::WebSocket));
+		cbx->addItem(Socket::schemeToString(Scheme::WebSocketSecure), static_cast<int>(Scheme::WebSocketSecure));
+		cbx->addItem(Socket::schemeToString(Scheme::SerialPort), static_cast<int>(Scheme::SerialPort));
+		cbx->addItem(Socket::schemeToString(Scheme::LocalSocket), static_cast<int>(Scheme::LocalSocket));
 		cbx->setCurrentIndex(0);
 	}
 	connect(ui->cbxScheme, qOverload<int>(&QComboBox::currentIndexChanged), this, [this] (int ix) {
 		using namespace shv::iotqt::rpc;
 		using Scheme = Socket::Scheme;
-		auto scheme = (Scheme)ui->cbxScheme->itemData(ix).toInt();
+		auto scheme = static_cast<Scheme>(ui->cbxScheme->itemData(ix).toInt());
 		ui->edPort->setEnabled(scheme == Scheme::Tcp || scheme == Scheme::WebSocket || scheme == Scheme::WebSocketSecure);
 	});
 
@@ -43,9 +43,9 @@ DlgBrokerProperties::DlgBrokerProperties(QWidget *parent) :
 
 	ui->cbxConnectionType->setCurrentIndex(0);
 
-	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::ChainPack), (int)Rpc::ProtocolType::ChainPack);
-	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::Cpon), (int)Rpc::ProtocolType::Cpon);
-	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::JsonRpc), (int)Rpc::ProtocolType::JsonRpc);
+	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::ChainPack), static_cast<int>(Rpc::ProtocolType::ChainPack));
+	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::Cpon), static_cast<int>(Rpc::ProtocolType::Cpon));
+	ui->rpc_protocolType->addItem(Rpc::protocolTypeToString(Rpc::ProtocolType::JsonRpc), static_cast<int>(Rpc::ProtocolType::JsonRpc));
 	ui->rpc_protocolType->setCurrentIndex(0);
 
 	using shv::iotqt::rpc::ClientConnection;

@@ -168,10 +168,10 @@ ShvNodeItem *ShvNodeItem::childAt(int ix) const
 	return m_children[ix];
 }
 
-void ShvNodeItem::insertChild(int ix, ShvNodeItem *n)
+void ShvNodeItem::insertChild(qsizetype ix, ShvNodeItem *n)
 {
 	ServerTreeModel *m = treeModel();
-	m->beginInsertRows(m->indexFromItem(this), ix, ix);
+	m->beginInsertRows(m->indexFromItem(this), static_cast<int>(ix), static_cast<int>(ix));
 	n->setParent(this);
 	m_children.insert(ix, n);
 	m->endInsertRows();
@@ -194,7 +194,7 @@ void ShvNodeItem::deleteChildren()
 	if(childCount() == 0)
 		return;
 	ServerTreeModel *m = treeModel();
-	m->beginRemoveRows(m->indexFromItem(this), 0, childCount() - 1);
+	m->beginRemoveRows(m->indexFromItem(this), 0, static_cast<int>(childCount() - 1));
 	qDeleteAll(m_children);
 	m_children.clear();
 	m->endRemoveRows();
@@ -215,7 +215,7 @@ std::string ShvNodeItem::shvPath() const
 	}
 	std::reverse(lst.begin(), lst.end());
 	std::string path = shv::core::utils::ShvPath::joinDirs(lst);
-	path = shv::core::Utils::joinPath(srv_nd->shvRoot(), path);
+	path = shv::core::utils::joinPath(srv_nd->shvRoot(), path);
 	return path;
 }
 
@@ -305,7 +305,7 @@ void ShvNodeItem::loadChildren()
 {
 	m_childrenLoaded = false;
 	ShvBrokerNodeItem *srv_nd = serverNode();
-	m_loadChildrenRqId = srv_nd->callNodeRpcMethod(shvPath(), cp::Rpc::METH_LS, cp::RpcValue::List{std::string(), (unsigned)0x7F});
+	m_loadChildrenRqId = srv_nd->callNodeRpcMethod(shvPath(), cp::Rpc::METH_LS, cp::RpcValue::List{std::string(), 0x7FU});
 	emitDataChanged();
 }
 
