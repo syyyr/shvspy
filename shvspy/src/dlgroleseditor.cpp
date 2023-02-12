@@ -157,7 +157,7 @@ void DlgRolesEditor::listRoles()
 			}
 			else{
 				if (response.result().isList()){
-					shv::chainpack::RpcValue::List res = response.result().toList();
+					const auto &res = response.result().asList();
 					m_dataModel->setRowCount(static_cast<int>(res.size()));
 					for (size_t i = 0; i < res.size(); i++){
 						QStandardItem *item = new QStandardItem(QString::fromStdString(res.at(i).toStdString()));

@@ -230,9 +230,9 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 
 			deleteChildren();
 			ServerTreeModel *m = treeModel();
-			const shv::chainpack::RpcValue::List lst = resp.result().toList();
-			for(const cp::RpcValue &dir_entry : lst) {
-				const cp::RpcValue::List &long_dir_entry = dir_entry.toList();
+			const auto &lst = resp.result().asList();
+			for(const auto &dir_entry : lst) {
+				const auto &long_dir_entry = dir_entry.asList();
 				std::string ndid = long_dir_entry.empty()? dir_entry.toString(): long_dir_entry.value(0).toString();
 				ShvNodeItem *nd = new ShvNodeItem(m, ndid);
 				if(!long_dir_entry.empty()) {

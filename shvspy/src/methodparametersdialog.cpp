@@ -258,7 +258,7 @@ bool MethodParametersDialog::tryParseListParams(const cp::RpcValue &params)
 	if (!params.isList()) {
 		return false;
 	}
-	cp::RpcValue::List param_list = params.toList();
+	const auto &param_list = params.asList();
 
 	for (const cp::RpcValue &param : param_list) {
 		if (!m_supportedTypes.contains(param.type())) {
@@ -276,14 +276,14 @@ bool MethodParametersDialog::tryParseMapParams(const cp::RpcValue &params)
 	if (!params.isMap()) {
 		return false;
 	}
-	cp::RpcValue::Map param_map = params.toMap();
+	const auto &param_map = params.asMap();
 
-	for (auto param_pair : param_map) {
+	for (const auto &param_pair : param_map) {
 		if (!m_supportedTypes.contains(param_pair.second.type())) {
 			return false;
 		}
 	}
-	for (auto param_pair : param_map) {
+	for (const auto &param_pair : param_map) {
 		newMapParameter(QString::fromStdString(param_pair.first), param_pair.second);
 	}
 	return true;

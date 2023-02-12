@@ -199,7 +199,7 @@ void DlgMountsEditor::listMounts()
 	cb->start(this, [this](const shv::chainpack::RpcResponse &response) {
 		if (response.isSuccess()){
 			if (response.result().isList()){
-				const shv::chainpack::RpcValue::List &res = response.result().toList();
+				const auto &res = response.result().asList();
 
 				for (size_t i = 0; i < res.size(); i++){
 					QString id = QString::fromStdString(res.at(i).asString());

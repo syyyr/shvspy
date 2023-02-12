@@ -125,8 +125,8 @@ void DlgAddEditUser::checkExistingUser(std::function<void(bool, bool)> callback)
 			}
 			else {
 				std::string user_name = user();
-				const shv::chainpack::RpcValue::List &res = response.result().toList();
-				for (const shv::chainpack::RpcValue &item : res) {
+				const auto &res = response.result().asList();
+				for (const auto &item : res) {
 					if (item.asString() == user_name) {
 						callback(true, true);
 						return;

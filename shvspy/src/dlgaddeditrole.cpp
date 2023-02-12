@@ -103,8 +103,8 @@ void DlgAddEditRole::checkExistingRole(std::function<void(bool, bool)> callback)
 			}
 			else {
 				std::string role_name = roleName().toStdString();
-				const shv::chainpack::RpcValue::List &res = response.result().toList();
-				for (const shv::chainpack::RpcValue &item : res) {
+				const auto &res = response.result().asList();
+				for (const auto &item : res) {
 					if (item.asString() == role_name) {
 						callback(true, true);
 						return;

@@ -68,7 +68,7 @@ QVariant AttributesModel::data(const QModelIndex &ix, int role) const
 		}
 		case ColResult: {
 			if(m_rows[ix.row()][ColError].isIMap()) {
-				cp::RpcResponse::Error err(m_rows[ix.row()][ColError].toIMap());
+				cp::RpcResponse::Error err(m_rows[ix.row()][ColError].asIMap());
 				return QString::fromStdString(err.message());
 			}
 			else {
