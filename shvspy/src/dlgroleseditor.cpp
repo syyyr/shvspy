@@ -7,7 +7,6 @@
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 
-static const std::string VALUE_METHOD = "value";
 static const std::string SET_VALUE_METHOD = "setValue";
 
 DlgRolesEditor::DlgRolesEditor(QWidget *parent, shv::iotqt::rpc::ClientConnection *rpc_connection) :
