@@ -34,6 +34,9 @@
 #include <QFileDialog>
 
 #include <fstream>
+#include <android/log.h>
+#define  LOG_TAG "shvspy-log-output-vole-pico"
+#define  ALOG(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 
 namespace cp = shv::chainpack;
 
@@ -42,6 +45,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+#if defined(__ANDROID__)
+	ui->treeServers->setAttribute(Qt::WA_AcceptTouchEvents);
+#endif
 
 	addAction(ui->actionQuit);
 	connect(ui->actionQuit, &QAction::triggered, TheApp::instance(), &TheApp::quit);
@@ -270,9 +276,15 @@ void MainWindow::on_actRemoveServer_triggered()
 	}
 }
 
+bool MainWindow::event(QEvent* event)
+{
+	return Super::event(event);
+}
+
 void MainWindow::on_treeServers_customContextMenuRequested(const QPoint &pos)
 {
 	QModelIndex ix = ui->treeServers->indexAt(pos);
+	ALOG("customContextMenuRequested: %d x %d y %d", ix.row(), pos.x(), pos.y());
 	ShvNodeItem *nd = TheApp::instance()->serverTreeModel()->itemFromIndex(ix);
 	ShvBrokerNodeItem *snd = qobject_cast<ShvBrokerNodeItem*>(nd);
 	QMenu *m = new QMenu();

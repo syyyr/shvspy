@@ -5,7 +5,8 @@
 ServerTreeView::ServerTreeView(QWidget *parent)
 	: Super(parent)
 {
-
+	grabGesture(Qt::GestureType::TapAndHoldGesture);
+	grabGesture(Qt::GestureType::TapGesture);
 }
 
 void ServerTreeView::keyPressEvent(QKeyEvent *ev)

@@ -50,6 +50,7 @@ protected:
 	void onNotificationsDoubleClicked(const QModelIndex &ix);
 
 	void closeEvent(QCloseEvent *ev) Q_DECL_OVERRIDE;
+	bool event(QEvent* event) Q_DECL_OVERRIDE;
 	void saveSettings();
 private:
 	void checkSettingsReady();

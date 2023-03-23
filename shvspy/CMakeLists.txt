@@ -35,4 +35,8 @@ target_link_libraries(shvspy PRIVATE libshvvisu)
 
 target_include_directories(shvspy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-install(TARGETS shvspy)
+if(ANDROID)
+    install(TARGETS shvspy LIBRARY DESTINATION lib)
+else()
+    install(TARGETS shvspy)
+endif()
