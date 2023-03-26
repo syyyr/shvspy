@@ -210,11 +210,13 @@ void MainWindow::resizeAttributesViewSectionsToFit()
 	int sum_section_w = 0;
 	for (int i = 0; i < hh->count(); ++i)
 		sum_section_w += hh->sectionSize(i);
+
 	int widget_w = ui->tblAttributes->geometry().size().width();
 	if(sum_section_w - widget_w > 0) {
 		int w_params = hh->sectionSize(AttributesModel::ColParams);
 		int w_result = hh->sectionSize(AttributesModel::ColResult);
-		int w_section_rest = sum_section_w - w_params - w_result;
+		int w_run = hh->sectionSize(AttributesModel::ColBtRun);
+		int w_section_rest = sum_section_w - w_params - w_result + w_run;
 		int w_params2 = w_params * (widget_w - w_section_rest) / (w_params + w_result);
 		int w_result2 = w_result * (widget_w - w_section_rest) / (w_params + w_result);
 		//shvDebug() << "widget:" << widget_w << "com col w:" << sum_section_w << "params section size:" << w_params << "result section size:" << w_result;
