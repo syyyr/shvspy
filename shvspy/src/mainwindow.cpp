@@ -315,10 +315,6 @@ void MainWindow::on_treeServers_customContextMenuRequested(const QPoint &pos)
 	}
 	else {
 		m->popup(ui->treeServers->viewport()->mapToGlobal(pos));
-		connect(m, &QMenu::aboutToHide, this, [=]() {
-			//shvInfo() << "aboutToHide:" << m;
-			m->deleteLater();
-		});
 		connect(m, &QMenu::triggered, this, [=, this](QAction *a) {
 			//shvInfo() << "MENU ACTION:" << a;
 			if(a == a_reloadNode) {
@@ -372,6 +368,7 @@ void MainWindow::on_treeServers_customContextMenuRequested(const QPoint &pos)
 					dlg.exec();
 				}
 			}
+			m->deleteLater();
 		});
 	}
 }
