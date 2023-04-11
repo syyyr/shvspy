@@ -171,7 +171,15 @@ void ShvBrokerNodeItem::open()
 		if(port > 0)
 			host += ':' + QString::number(port).toStdString();
 		//cli->setLoginType(pwd.size() == 40? cp::IRpcConnection::LoginType::Sha1: cp::IRpcConnection::LoginType::Plain);
-		cli->setLoginType(cp::IRpcConnection::LoginType::Sha1);
+		if(scheme_enum == shv::iotqt::rpc::Socket::Scheme::Ssl) {
+			// SSL encryption is enough
+			// plain text password can be used for LDAP authentication on broker if enabled
+			cli->setLoginType(cp::IRpcConnection::LoginType::Plain);
+		}
+		else {
+			// do not send plain text password over not encrypted socket
+			cli->setLoginType(cp::IRpcConnection::LoginType::Sha1);
+		}
 	}
 	cli->setHost(host);
 	//cli->setPort(m_serverPropeties.value("port").toInt());
