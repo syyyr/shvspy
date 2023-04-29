@@ -206,9 +206,11 @@ void DlgAddEditUser::callCreateRole(const std::string &role_name, std::function<
 		}
 	});
 
-	shv::iotqt::acl::AclRole role(0);
+	shv::iotqt::acl::AclRole role;
+	auto role_rpc = role.toRpcValue();
+	role_rpc.set("weight", 0);
 
-	shv::chainpack::RpcValue::List params{role_name, role.toRpcValue()};
+	shv::chainpack::RpcValue::List params{role_name, role_rpc};
 	m_rpcConnection->callShvMethod(rqid, aclEtcRolesNodePath(), SET_VALUE_METHOD, params);
 }
 
