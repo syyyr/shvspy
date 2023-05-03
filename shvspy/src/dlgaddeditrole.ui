@@ -241,6 +241,28 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="tbMoveRowDown">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../shvspy.qrc">
+             <normaloff>:/shvspy/images/down.svg</normaloff>:/shvspy/images/down.svg</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbMoveRowUp">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../shvspy.qrc">
+             <normaloff>:/shvspy/images/up.svg</normaloff>:/shvspy/images/up.svg</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>

@@ -28,6 +28,8 @@ public:
 	bool setData(const QModelIndex &ix, const QVariant &val, int role = Qt::EditRole) Q_DECL_OVERRIDE;
 	QVariant headerData (int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const Q_DECL_OVERRIDE;
 	void addRule();
+	void moveRuleUp(int index);
+	void moveRuleDown(int index);
 	void deleteRule(int index);
 	bool isRulesValid();
 

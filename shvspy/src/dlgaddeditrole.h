@@ -56,6 +56,8 @@ private:
 
 	void onAddRowClicked();
 	void onDeleteRowClicked();
+	void onMoveRowUpClicked();
+	void onMoveRowDownClicked();
 
 	void setStatusText(const QString &txt);
 private:

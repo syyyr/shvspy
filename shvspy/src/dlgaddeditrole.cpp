@@ -35,6 +35,8 @@ DlgAddEditRole::DlgAddEditRole(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 
 	connect(ui->tbAddRow, &QToolButton::clicked, this, &DlgAddEditRole::onAddRowClicked);
 	connect(ui->tbDeleteRow, &QToolButton::clicked, this, &DlgAddEditRole::onDeleteRowClicked);
+	connect(ui->tbMoveRowUp, &QToolButton::clicked, this, &DlgAddEditRole::onMoveRowUpClicked);
+	connect(ui->tbMoveRowDown, &QToolButton::clicked, this, &DlgAddEditRole::onMoveRowDownClicked);
 
 	m_rpcConnection = rpc_connection;
 
@@ -341,6 +343,16 @@ void DlgAddEditRole::onAddRowClicked()
 void DlgAddEditRole::onDeleteRowClicked()
 {
 	m_accessModel.deleteRule(ui->tvAccessRules->currentIndex().row());
+}
+
+void DlgAddEditRole::onMoveRowUpClicked()
+{
+	m_accessModel.moveRuleUp(ui->tvAccessRules->currentIndex().row());
+}
+
+void DlgAddEditRole::onMoveRowDownClicked()
+{
+	m_accessModel.moveRuleDown(ui->tvAccessRules->currentIndex().row());
 }
 
 void DlgAddEditRole::setStatusText(const QString &txt)
