@@ -171,6 +171,24 @@ void AccessModel::addRule()
 	endInsertRows();
 }
 
+void AccessModel::moveRuleUp(int index)
+{
+	if (index > 0) {
+		beginMoveRows(QModelIndex(), index, index, QModelIndex(), index - 1);
+		std::swap(m_rules.at(index), m_rules.at(index - 1));
+		endMoveRows();
+	}
+}
+
+void AccessModel::moveRuleDown(int index)
+{
+	if ((index >= 0) && (index < rowCount() - 1)) {
+		beginMoveRows(QModelIndex(), index, index, QModelIndex(), index + 2);
+		std::swap(m_rules.at(index), m_rules.at(index + 1));
+		endMoveRows();
+	}
+}
+
 void AccessModel::deleteRule(int index)
 {
 	if ((index >= 0) && (index < rowCount())){

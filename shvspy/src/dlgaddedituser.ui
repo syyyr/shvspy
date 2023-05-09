@@ -137,9 +137,6 @@
               <bold>false</bold>
              </font>
             </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
            </widget>
           </item>
           <item>

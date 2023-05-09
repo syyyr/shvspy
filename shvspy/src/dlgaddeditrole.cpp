@@ -35,6 +35,8 @@ DlgAddEditRole::DlgAddEditRole(QWidget *parent, shv::iotqt::rpc::ClientConnectio
 
 	connect(ui->tbAddRow, &QToolButton::clicked, this, &DlgAddEditRole::onAddRowClicked);
 	connect(ui->tbDeleteRow, &QToolButton::clicked, this, &DlgAddEditRole::onDeleteRowClicked);
+	connect(ui->tbMoveRowUp, &QToolButton::clicked, this, &DlgAddEditRole::onMoveRowUpClicked);
+	connect(ui->tbMoveRowDown, &QToolButton::clicked, this, &DlgAddEditRole::onMoveRowDownClicked);
 
 	m_rpcConnection = rpc_connection;
 
@@ -145,10 +147,14 @@ void DlgAddEditRole::callSetRoleSettings()
 	});
 
 	m_role.roles = roles();
-	m_role.weight = weight();
 	m_role.profile = profile();
 
-	shv::chainpack::RpcValue::List params{roleName().toStdString(), m_role.toRpcValue()};
+	auto role_rpc = m_role.toRpcValue();
+	if (ui->sbWeight->isVisible()) {
+		role_rpc.set("weight", ui->sbWeight->value());
+	}
+
+	shv::chainpack::RpcValue::List params{roleName().toStdString(), role_rpc};
 	m_rpcConnection->callShvMethod(rqid, aclEtcRoleNodePath(), SET_VALUE_METHOD, params);
 }
 
@@ -169,8 +175,16 @@ void DlgAddEditRole::callGetRoleSettings()
 			else{
 				m_role = shv::iotqt::acl::AclRole::fromRpcValue(response.result());
 				setRoles(m_role.roles);
-				setWeight(m_role.weight);
 				setProfile(m_role.profile);
+				// libshv no longer supports weight, so we need to handle it manually.
+				if (auto v = response.result().asMap().value("weight"); v.isInt()) {
+					setWeight(v.toInt());
+					ui->lblWeight->show();
+					ui->sbWeight->show();
+				} else {
+					ui->lblWeight->hide();
+					ui->sbWeight->hide();
+				}
 			}
 		}
 		else{
@@ -329,6 +343,16 @@ void DlgAddEditRole::onAddRowClicked()
 void DlgAddEditRole::onDeleteRowClicked()
 {
 	m_accessModel.deleteRule(ui->tvAccessRules->currentIndex().row());
+}
+
+void DlgAddEditRole::onMoveRowUpClicked()
+{
+	m_accessModel.moveRuleUp(ui->tvAccessRules->currentIndex().row());
+}
+
+void DlgAddEditRole::onMoveRowDownClicked()
+{
+	m_accessModel.moveRuleDown(ui->tvAccessRules->currentIndex().row());
 }
 
 void DlgAddEditRole::setStatusText(const QString &txt)
