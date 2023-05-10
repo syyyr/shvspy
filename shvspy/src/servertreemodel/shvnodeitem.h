@@ -45,7 +45,8 @@ public:
 	void setNodeId(std::string nid) {m_nodeId = std::move(nid);}
 	ShvBrokerNodeItem* serverNode() const;
 	ShvNodeItem* parentNode() const;
-	ShvNodeItem* childAt(int ix) const;
+	ShvNodeItem* childAt(qsizetype ix) const;
+	ShvNodeItem* childAt(const std::string_view &id) const;
 	qsizetype childCount() const {return m_children.count();}
 	void insertChild(qsizetype ix, ShvNodeItem *n);
 	void appendChild(ShvNodeItem *n) {insertChild(m_children.count(), n);}
@@ -73,6 +74,7 @@ public:
 	void loadMethods();
 	bool isMethodsLoaded() const {return m_methodsLoaded;}
 	bool isMethodsLoading() const {return m_loadMethodsRqId > 0;}
+	Q_SIGNAL void childrenLoaded();
 	Q_SIGNAL void methodsLoaded();
 
 	Q_SIGNAL void rpcMethodCallFinished(int method_ix);

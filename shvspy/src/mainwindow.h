@@ -35,6 +35,7 @@ protected:
 	Q_SLOT void onShvTreeViewCurrentSelectionChanged(const QModelIndex &curr_ix, const QModelIndex &prev_ix);
 
 	void openLogInspector();
+	void gotoShvPath();
 
 	void resizeAttributesViewSectionsToFit();
 

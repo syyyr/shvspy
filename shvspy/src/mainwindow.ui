@@ -81,7 +81,7 @@
      <x>0</x>
      <y>0</y>
      <width>1414</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_View">
@@ -188,9 +188,16 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="edAttributesShvPath">
-         <property name="readOnly">
-          <bool>true</bool>
+        <widget class="QLineEdit" name="edAttributesShvPath"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btGotoShvPath">
+         <property name="toolTip">
+          <string>Go to shv path</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../shvspy.qrc">
+           <normaloff>:/shvspy/images/run.png</normaloff>:/shvspy/images/run.png</iconset>
          </property>
         </widget>
        </item>

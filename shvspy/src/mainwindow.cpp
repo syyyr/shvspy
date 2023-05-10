@@ -25,6 +25,7 @@
 #include <shv/coreqt/log.h>
 
 #include <shv/coreqt/rpc.h>
+#include <shv/core/utils/shvpath.h>
 
 #include <QSettings>
 #include <QMessageBox>
@@ -135,6 +136,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->errorLogWidget->setLogTableModel(TheApp::instance()->errorLogModel());
 
 	checkSettingsReady();
+
+	connect(ui->edAttributesShvPath, &QLineEdit::returnPressed, ui->btGotoShvPath, &QPushButton::click);
+	connect(ui->btGotoShvPath, &QPushButton::clicked, this, &MainWindow::gotoShvPath);
 }
 
 MainWindow::~MainWindow()
@@ -649,6 +653,87 @@ void MainWindow::openLogInspector()
 	}
 }
 
+class NodeChildLoader : public QObject
+{
+	Q_OBJECT
+public:
+	NodeChildLoader(ShvNodeItem *parent_node, const QStringList &dirs)
+		: m_parentNode(parent_node)
+		, m_dirs(dirs)
+	{}
+	Q_SIGNAL void finished(ShvNodeItem *last_node);
+	void start()
+	{
+		shvDebug() << "start:" << m_dirs.join(',');
+		if(m_dirs.isEmpty()) {
+			deleteLater();
+			return;
+		}
+		auto dir = m_dirs.first().toStdString();
+		if(m_parentNode->childCount() > 0) {
+			if(auto *nd = m_parentNode->childAt(dir); nd) {
+				shvDebug() << "found child:" << dir;
+				m_dirs.takeFirst();
+				if(m_dirs.isEmpty()) {
+					shvDebug() << "FINISH";
+					emit finished(nd);
+					deleteLater();
+				}
+				else {
+					m_parentNode = nd;
+					start();
+				}
+			}
+			else {
+				shvWarning() << "Invalid dir:" << dir;
+				deleteLater();
+			}
+		}
+		else {
+			shvDebug() << "NOT found child:" << dir;
+			connect(m_parentNode, &ShvNodeItem::childrenLoaded, this, [this]() {
+				if(m_parentNode->childCount() == 0) {
+					shvWarning() << "Missing dirs:" << m_dirs.join(',');
+					deleteLater();
+				}
+				else {
+					start();
+				}
+			});
+			m_parentNode->loadChildren();
+		}
+	}
+private:
+	ShvNodeItem *m_parentNode;
+	QStringList m_dirs;
+};
+
+void MainWindow::gotoShvPath()
+{
+	try {
+		auto *view = ui->treeServers;
+		auto *model = TheApp::instance()->serverTreeModel();
+		auto ix = TheApp::instance()->serverTreeModel()->itemFromIndex(ui->treeServers->currentIndex());
+		auto *server_node = ix->serverNode();
+		auto path = ui->edAttributesShvPath->text().toStdString();
+		QStringList dirs;
+		for(const auto &d : shv::core::utils::ShvPath::split(path)) {
+			dirs << QString::fromStdString(std::string(d));
+		}
+		auto *ldr = new NodeChildLoader(server_node, dirs);
+		connect(ldr, &NodeChildLoader::finished, this, [model, view](ShvNodeItem *last_node) {
+			if(auto last_ix = model->indexFromItem(last_node); last_ix.isValid()) {
+				view->scrollTo(last_ix);
+				view->setCurrentIndex(last_ix);
+			}
+		});
+		ldr->start();
+	}
+	catch(const std::exception &e) {
+		shvError() << __PRETTY_FUNCTION__ << "error:" << e.what();
+	}
+}
+
 void MainWindow::on_actHelpAbout_triggered()
 {
 	QMessageBox::about(this
@@ -663,3 +748,5 @@ void MainWindow::on_actHelpAbout_triggered()
 						 "<p><a href=\"https://github.com/silicon-heaven\">github.com/silicon-heaven</a></p>"
 					   );
 }
+
+#include "mainwindow.moc"

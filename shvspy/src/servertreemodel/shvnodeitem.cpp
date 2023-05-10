@@ -161,11 +161,22 @@ ShvNodeItem *ShvNodeItem::parentNode() const
 	return qobject_cast<ShvNodeItem*>(parent());
 }
 
-ShvNodeItem *ShvNodeItem::childAt(int ix) const
+ShvNodeItem *ShvNodeItem::childAt(qsizetype ix) const
 {
 	if(ix < 0 || ix >= m_children.count())
 		SHV_EXCEPTION("Invalid child index");
 	return m_children[ix];
+}
+
+ShvNodeItem *ShvNodeItem::childAt(const std::string_view &id) const
+{
+	for (qsizetype i = 0; i < childCount(); ++i) {
+		ShvNodeItem *nd = childAt(i);
+		if(nd && id == nd->nodeId()) {
+			return nd;
+		}
+	}
+	return nullptr;
 }
 
 void ShvNodeItem::insertChild(qsizetype ix, ShvNodeItem *n)
@@ -246,6 +257,7 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 				appendChild(nd);
 			}
 			emitDataChanged();
+			emit childrenLoaded();
 		}
 		else if(rqid == m_loadMethodsRqId) {
 			m_loadMethodsRqId = 0;
@@ -306,7 +318,7 @@ void ShvNodeItem::loadChildren()
 	m_childrenLoaded = false;
 	ShvBrokerNodeItem *srv_nd = serverNode();
 	m_loadChildrenRqId = srv_nd->callNodeRpcMethod(shvPath(), cp::Rpc::METH_LS, cp::RpcValue::List{std::string(), 0x7FU});
-	emitDataChanged();
+	//emitDataChanged();
 }
 
 bool ShvNodeItem::checkMethodsLoaded()
