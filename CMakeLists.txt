@@ -36,6 +36,7 @@ if(EMSCRIPTEN)
 endif()
 
 add_subdirectory(3rdparty/necrolog)
+set(WITH_BROKER OFF CACHE BOOL "")
 add_subdirectory(3rdparty/libshv)
 
 if(USE_QT6)
