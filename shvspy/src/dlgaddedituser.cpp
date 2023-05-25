@@ -129,8 +129,8 @@ void DlgAddEditUser::checkExistingUser(std::function<void(bool, bool)> callback)
 			}
 			else {
 				std::string user_name = user();
-				const auto &res = response.result().asList();
-				for (const auto &item : res) {
+				const auto res = response.result();
+				for (const auto &item : res.asList()) {
 					if (item.asString() == user_name) {
 						callback(true, true);
 						return;

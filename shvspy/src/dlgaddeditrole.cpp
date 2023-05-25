@@ -105,8 +105,8 @@ void DlgAddEditRole::checkExistingRole(std::function<void(bool, bool)> callback)
 			}
 			else {
 				std::string role_name = roleName().toStdString();
-				const auto &res = response.result().asList();
-				for (const auto &item : res) {
+				const auto res = response.result();
+				for (const auto &item : res.asList()) {
 					if (item.asString() == role_name) {
 						callback(true, true);
 						return;

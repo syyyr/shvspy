@@ -194,9 +194,9 @@ void MainWindow::checkSettingsReady()
 	QByteArray wstate = m_settings.value(QStringLiteral("ui/mainWindow/state")).toByteArray();
 	if(wstate.isEmpty()) {
 		const shv::chainpack::RpcValue rv = default_config();
-		const std::string &s = rv.asMap().value("ui")
-				.asMap().value("mainWindow")
-				.asMap().value("state").asString();
+		const std::string &s = rv.asMap().valref("ui")
+				.asMap().valref("mainWindow")
+				.asMap().valref("state").asString();
 		//shvInfo() << "default wstate:" << s;
 		auto ba = QByteArray::fromStdString(s);
 		//shvInfo() << "default wstat2:" << ba.toStdString();

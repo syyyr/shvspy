@@ -76,8 +76,8 @@ void DlgAddEditMount::checkExistingMountId(std::function<void(bool, bool)> callb
 			}
 			else {
 				std::string mount_id = ui->leDeviceId->text().toStdString();
-				const auto &res = response.result().asList();
-				for (const auto &item : res) {
+				const auto res = response.result();
+				for (const auto &item : res.asList()) {
 					if (item.asString() == mount_id) {
 						callback(true, true);
 						return;
