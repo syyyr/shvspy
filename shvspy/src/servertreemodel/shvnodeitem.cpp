@@ -241,8 +241,8 @@ void ShvNodeItem::processRpcMessage(const shv::chainpack::RpcMessage &msg)
 
 			deleteChildren();
 			ServerTreeModel *m = treeModel();
-			const auto &lst = resp.result().asList();
-			for(const auto &dir_entry : lst) {
+			const auto res = resp.result();
+			for(const auto &dir_entry : res.asList()) {
 				const auto &long_dir_entry = dir_entry.asList();
 				std::string ndid = long_dir_entry.empty()? dir_entry.toString(): long_dir_entry.value(0).toString();
 				ShvNodeItem *nd = new ShvNodeItem(m, ndid);

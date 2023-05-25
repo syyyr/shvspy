@@ -78,7 +78,8 @@ void DlgUsersEditor::listUsers()
 			}
 			else{
 				if (response.result().isList()){
-					const auto &res = response.result().asList();
+					const auto result = response.result();
+					const auto &res = result.asList();
 					m_dataModel->setRowCount(static_cast<int>(res.size()));
 					for (size_t i = 0; i < res.size(); i++){
 						QStandardItem *item = new QStandardItem(QString::fromStdString(res.at(i).toStdString()));
